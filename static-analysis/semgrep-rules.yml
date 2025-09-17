@@ -1,0 +1,57 @@
+rules:
+  - id: file-put-contents
+    languages: [php]
+    message: Possible file write sink file_put_contents
+    severity: INFO
+    patterns:
+      - pattern: file_put_contents(...)
+
+  - id: fopen
+    languages: [php]
+    message: Possible file write sink fopen
+    severity: INFO
+    patterns:
+      - pattern: fopen(...)
+
+  - id: fwrite
+    languages: [php]
+    message: Possible file write sink fwrite
+    severity: INFO
+    patterns:
+      - pattern: fwrite(...)
+
+  - id: fprintf
+    languages: [php]
+    message: Possible file write sink fprintf
+    severity: INFO
+    patterns:
+      - pattern: fprintf(...)
+
+  - id: wp-upload-dir
+    languages: [php]
+    message: Use of wp_upload_dir (may indicate log or file path handling)
+    severity: INFO
+    patterns:
+      - pattern: wp_upload_dir(...)
+
+  - id: hardcoded-wp-content-path
+    languages: [php]
+    message: Hardcoded path under /wp-content/ detected
+    severity: INFO
+    patterns:
+      - pattern-regex: ".*/wp-content/.*"
+  
+  - id: enabeling WP_DEBUG
+    languages: [php]
+    message: Plugin enabled WP_DEBUG is assumed to be FALSE in wp-config.php
+    severity: WARNING
+    patterns:
+      - pattern: define( 'WP_DEBUG', true );
+  
+  - id: enabeling WP_DEBUG_LOG
+    languages: [php]
+    message: Plugin enabled WP_DEBUG_LOG is assumed to be FALSE in wp-config.php
+    severity: WARNING
+    patterns:
+      - pattern: define( 'WP_DEBUG_LOG', true );
+
