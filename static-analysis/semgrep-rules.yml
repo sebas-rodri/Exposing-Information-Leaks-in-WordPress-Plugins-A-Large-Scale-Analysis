@@ -41,14 +41,14 @@ rules:
     patterns:
       - pattern-regex: ".*/wp-content/.*"
   
-  - id: enabeling WP_DEBUG
+  - id: enabeling-WP_DEBUG
     languages: [php]
     message: Plugin enabled WP_DEBUG is assumed to be FALSE in wp-config.php
     severity: WARNING
     patterns:
       - pattern: define( 'WP_DEBUG', true );
   
-  - id: enabeling WP_DEBUG_LOG
+  - id: enabelin
     languages: [php]
     message: Plugin enabled WP_DEBUG_LOG is assumed to be FALSE in wp-config.php
     severity: WARNING
