@@ -18,10 +18,11 @@ RUN java --version
 WORKDIR /static_analysis
 
 #Required Files for static analysis
-COPY download-and-unzip.py .
 COPY requirements.txt .
 COPY plugins_sorted.csv .
 COPY semgrep-rules.yml .
+COPY python_scripts .
+
 
 #Make entrypoint executable
 COPY entrypoint.sh /

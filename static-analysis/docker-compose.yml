@@ -1,5 +1,0 @@
-services:
-  static-analysis:
-    build: .
-    volumes:
-      - ./results:/static_analysis/results:rw

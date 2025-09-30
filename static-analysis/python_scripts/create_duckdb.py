@@ -17,13 +17,14 @@ con.sql("""
 con.sql("""
         CREATE TABLE IF NOT EXISTS semgrep_runs (
             run_id INTEGER DEFAULT(nextval('run_ids')) PRIMARY KEY,
+            plugin_name VARCHAR NOT NULL,
             plugin_slug VARCHAR NOT NULL UNIQUE,
             plugin_version VARCHAR NOT NULL,
             plugin_download_link VARCHAR NOT NULL,
             plugin_num_dowloads INTEGER NOT NULL,
             active_installations INTEGER NOT NULL,
-            duration FLOAT NOT NULL,
-            error_count INTEGER NOT NULL
+            error_count INTEGER NOT NULL,
+            errors VARCHAR
             );
         
         CREATE TABLE IF NOT EXISTS rules (
@@ -39,6 +40,7 @@ con.sql("""
             start_line INTEGER NOT NULL,
             end_line INTEGER NOT NULL,
             message VARCHAR,
+            lines VARCHAR,
             FOREIGN KEY (rule_id) REFERENCES rules (rule_id),
             FOREIGN KEY (run_id) REFERENCES semgrep_runs (run_id)
             );
