@@ -1,11 +1,11 @@
 FROM python:3.13
 
 #Set number of plugins to analyse
-ENV NUM_PLUGINS=10 DB_NAME="semgrep_analysis.db"
+ENV NUM_PLUGINS=3 DB_NAME="semgrep_analysis.db"
 
 #semgrep & joern installation
 RUN apt-get update && apt-get upgrade -y
-RUN python3 -m pip install semgrep duckdb
+RUN python3 -m pip install semgrep duckdb PyYAML
 RUN apt-get install -y openjdk-21-jdk
 ADD "https://github.com/joernio/joern/releases/latest/download/joern-install.sh" /
 RUN chmod +x ./joern-install.sh \

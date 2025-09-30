@@ -47,7 +47,7 @@ for i, slug in enumerate(slugs):
     #save findings
     for result in results:
         rule_id = result.get("check_id")
-        file_path = result.get("path")
+        file_path = result.get("path").replace("plugins/", "")
         run_id = i
         start_line = result.get("start").get("line")
         end_line = result.get("end").get("line")
