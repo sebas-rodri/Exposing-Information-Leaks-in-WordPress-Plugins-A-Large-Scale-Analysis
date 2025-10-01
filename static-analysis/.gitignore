@@ -2,3 +2,4 @@ poc.php
 test.txt
 results
 semgrep_analysis.db
+secrets.env

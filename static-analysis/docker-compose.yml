@@ -3,3 +3,5 @@ services:
     build: .
     volumes:
       - ./results:/static_analysis/results:rw
+    env_file:
+      - secrets.env
