@@ -8,7 +8,7 @@ ls /static_analysis
 rm -f $DB_NAME
 python3 create_duckdb.py $DB_NAME
 python3 parse_yml_to_db.py semgrep-rules.yml $DB_NAME
-semgrep ci
+semgrep login
 
 #Go Through all Plugins
 for i in `seq 0 $(($NUM_PLUGINS - 1))`
