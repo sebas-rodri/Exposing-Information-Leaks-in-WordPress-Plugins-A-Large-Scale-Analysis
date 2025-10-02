@@ -32,20 +32,17 @@ services:
       - wordpress
     image: wordpress:cli
     user: '33' # For permissions
-    command: >
-      /bin/sh -c '
-      sleep 10;
-      wp core install --path="/var/www/html" --url="http://localhost:8080" --title="Dynamic Analysis ${PLUGIN_SLUG}" --admin_user=admin --admin_password=secret --admin_email=foo@bar.com;
-      wp plugin activate ${PLUGIN_SLUG} --allow-root
-      '
+    command: ['sh', '/seed-script.sh']
     volumes: #Same as wp instance
     - wordpress:/var/www/html
     - ./plugins/${PLUGIN_SLUG}:/var/www/html/wp-content/plugins/${PLUGIN_SLUG}:ro
+    - ./seed-script.sh:/seed-script.sh:ro
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: exampleuser
       WORDPRESS_DB_PASSWORD: examplepass
       WORDPRESS_DB_NAME: exampledb
+      PLUGIN_SLUG: ${PLUGIN_SLUG}
 
 
   #runner:
