@@ -48,7 +48,13 @@ services:
   #runner:
   #Container to trigger AJAX/REST dynamic Analysis
 
-  #watcher:
+  watcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    volumes:
+      - wordpress:/var/www/html:ro
+
   #Container to look out for file changes
 volumes:
   wordpress:
