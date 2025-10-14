@@ -1,0 +1,5 @@
+FROM wordpress:latest
+
+RUN set -eux; \
+    pecl install uopz-7.1.1; \
+    docker-php-ext-enable uopz
