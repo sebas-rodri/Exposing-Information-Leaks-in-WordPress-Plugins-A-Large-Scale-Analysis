@@ -27,6 +27,9 @@ services:
     volumes:
       - wordpress:/var/www/html
       - ./plugins/${PLUGIN_SLUG}:/var/www/html/wp-content/plugins/${PLUGIN_SLUG}:ro #Run over environment variable
+      - ./plugins/benchmark-log-plugin:/var/www/html/wp-content/plugins/benchmark-log-plugin:ro
+      - ./plugins/test.php:/var/www/html/wp-content/plugins/test.php:ro
+      - ./plugins/function-hooking-plugin:/var/www/html/wp-content/plugins/function-hooking-plugin:ro
   
   wordpress-cli: #Needed for automatic interaction
     depends_on:
@@ -38,6 +41,9 @@ services:
     volumes: #Same as wp instance
     - wordpress:/var/www/html
     - ./plugins/${PLUGIN_SLUG}:/var/www/html/wp-content/plugins/${PLUGIN_SLUG}:ro
+    - ./plugins/benchmark-log-plugin:/var/www/html/wp-content/plugins/benchmark-log-plugin:ro
+    - ./plugins/test.php:/var/www/html/wp-content/plugins/test.php:ro
+    - ./plugins/function-hooking-plugin:/var/www/html/wp-content/plugins/function-hooking-plugin:ro
     - ./seed-script.sh:/seed-script.sh:ro
     environment:
       WORDPRESS_DB_HOST: db

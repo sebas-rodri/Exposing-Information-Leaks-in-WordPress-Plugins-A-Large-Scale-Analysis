@@ -2,8 +2,13 @@
 set -euo pipefail
 set -x
 
-sleep 10;
-wp core multisite-install --path="/var/www/html" --url="http://localhost:8080" --title="Dynamic Analysis ${PLUGIN_SLUG}" --admin_user=admin --admin_password=secret --admin_email=foo@bar.com;
+sleep 7;
+wp core multisite-install --path="/var/www/html" --url="http://localhost:8080" --title="Dynamic Analysis ${PLUGIN_SLUG}" --admin_user=admin --admin_password=secret --admin_email=foo@bar.com --allow-root;
+#Debug
+ls -la /var/www/html/wp-content/plugins/
+wp plugin list --allow-root
+###################################
+wp plugin activate benchmark-log-plugin --allow-root
 wp plugin activate ${PLUGIN_SLUG} --allow-root
 
 #seed database with wp-api
@@ -25,3 +30,4 @@ wp user create subscriber subscriber@subscriber.de --role=subscriber --user_pass
 wp user generate --count=10
 wp post generate --count=10 --post_type=page
 
+wp plugin activate function-hooking-plugin --allow-root
