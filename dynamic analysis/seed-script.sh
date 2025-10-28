@@ -11,6 +11,10 @@ wp plugin list --allow-root
 wp plugin activate benchmark-log-plugin --allow-root
 wp plugin activate ${PLUGIN_SLUG} --allow-root
 
+#pretty links
+wp rewrite structure '/%postname%/' --allow-root
+wp rewrite flush --allow-root
+
 #seed database with wp-api
 #TODO: 
 #wp db check
@@ -31,3 +35,5 @@ wp user generate --count=10
 wp post generate --count=10 --post_type=page
 
 wp plugin activate function-hooking-plugin --allow-root
+
+wp plugin deactivate --all --allow-root
