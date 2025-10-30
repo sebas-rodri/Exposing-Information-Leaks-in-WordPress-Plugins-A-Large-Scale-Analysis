@@ -12,17 +12,13 @@ wp plugin activate benchmark-log-plugin --allow-root
 wp plugin activate ${PLUGIN_SLUG} --allow-root
 
 #pretty links
-wp rewrite structure '/%postname%/' --allow-root
-wp rewrite flush --allow-root
 
 #seed database with wp-api
 #TODO: 
 #wp db check
 #wp db reset --yes
 
-
 wp site create --slug=holamundo
-wp site list --field=url
 
 #User creation one per role
 wp user create admin2 admin@admin.de --role=administrator --user_pass=administrator --nickname=Al --first_name=Alice --last_name=Austen
@@ -34,6 +30,4 @@ wp user create subscriber subscriber@subscriber.de --role=subscriber --user_pass
 wp user generate --count=10
 wp post generate --count=10 --post_type=page
 
-wp plugin activate function-hooking-plugin --allow-root
-
-wp plugin deactivate --all --allow-root
+#wp plugin activate function-hooking-plugin --allow-root

@@ -31,37 +31,39 @@ function log_bench_event(string $event, array $data = [] ) {
  * Users
  ********************************************/
 //Registration
-add_action('user_register', function ($user_id) {
+function benchmark_user_register_callback($user_id) {
     log_bench_event('user_register', [
         'user_id' => $user_id,
     ]);
-});
+}
 
-add_action('profile_update', function ($user_id, $old_user_data) {
+
+function benchmark_profile_update_callback($user_id, $old_user_data, $user_data) {
     //WPUser Object $old_user_data
     log_bench_event('profile_update', [
         'user_id' => $user_id,
         'old_user_login' => $old_user_data->user_login,
         'old_user_email' => $old_user_data->user_email,
         'old_display_name' => $old_user_data->display_name,
+        'userdata' => $user_data
     ]);
-}, 10, 2);
+}
 
-add_action('personal_options_update', function ($user_id) {
+function benchmark_personal_options_update_callback($user_id) {
     log_bench_event('personal_options_update', [
         'user_id' => $user_id,
         'updated_fields' => $_POST,
     ]);
-});
+}
 
-add_action('edit_user_profile_update', function ($user_id) {
+function benchmark_edit_user_profile_update_callback($user_id) {
     log_bench_event('edit_user_profile_update', [
         'user_id' => $user_id,
         'updated_fields' => $_POST,
     ]);
-});
+}
 
-add_action('user_profile_update_errors', function ($errors, $update, $user) {
+function benchmark_user_profile_update_errors_callback($errors, $update, $user) {
     //WP Error Object $errors
     log_bench_event('user_profile_update_errors', [
         'user_id' => $user->ID, 
@@ -70,34 +72,32 @@ add_action('user_profile_update_errors', function ($errors, $update, $user) {
         'error_messages' => $errors->get_error_messages(),
         'attempted_fields' => $_POST,
     ]);
-}, 10, 3);
+}
 
-//Login
-add_action('wp_login', function ($user_login, $user) {
+function benchmark_wp_login_callback($user_login, $user) {
     log_bench_event('wp_login', [
         'user_login' => $user_login,
         'user_id' => $user->ID,
         'user_email' => $user->user_email,
         'user_roles' => $user->roles,
     ]);
-}, 10, 2);
+}
 
-add_action('wp_login_failed', function ($username, $error) {
+function benchmark_wp_login_failed_callback($username, $error) {
     log_bench_event('wp_login_failed', [
         'username' => $username,
         'error_code' => $error->get_error_code(),
         'error_message' => $error->get_error_message(),
     ]);
-}, 10, 2);
+}
 
-add_action('wp_logout', function ($user_id) {
+function benchmark_wp_logout_callback($user_id) {
     log_bench_event('wp_logout', [
         'user_id' => $user_id,
     ]);
-});
+}
 
-//Passwords
-add_action('lostpassword_post', function ($errors, $user_data) {
+function benchmark_lostpassword_post_callback($errors, $user_data) {
     log_bench_event('lostpassword_post', [
         'user_login' => $user_data->user_login ?? '',
         'user_email' => $user_data->user_email ?? '',
@@ -105,16 +105,27 @@ add_action('lostpassword_post', function ($errors, $user_data) {
         'has_errors' => !empty($errors->get_error_codes()),
         'error_codes' => $errors->get_error_codes(),
     ]);
-}, 10, 2);
+}
 
-add_action('password_reset', function ($user, $new_pass) {
+function benchmark_password_reset_callback($user, $new_pass) {
     log_bench_event('password_reset', [
         'user_id' => $user->ID,
         'user_login' => $user->user_login,
         'user_email' => $user->user_email,
         'new_password'=> $new_pass,
     ]);
-}, 10, 2);
+}
+
+add_action('user_register', 'benchmark_user_register_callback');
+add_action('profile_update', 'benchmark_profile_update_callback', 10, 3);
+add_action('personal_options_update', 'benchmark_personal_options_update_callback');
+add_action('edit_user_profile_update', 'benchmark_edit_user_profile_update_callback');
+add_action('user_profile_update_errors', 'benchmark_user_profile_update_errors_callback', 10, 3);
+add_action('wp_login', 'benchmark_wp_login_callback', 10, 2);
+add_action('wp_login_failed', 'benchmark_wp_login_failed_callback', 10, 2);
+add_action('wp_logout', 'benchmark_wp_logout_callback');
+add_action('lostpassword_post', 'benchmark_lostpassword_post_callback', 10, 2);
+add_action('password_reset', 'benchmark_password_reset_callback', 10, 2);
 
 /********************************************+
  * CRUD
@@ -223,11 +234,6 @@ register_deactivation_hook(
 
 
 
-/********************************************+
- * registering hooks
- ********************************************/
-
-add_action('profile_update','');
 
 /*
 My approach will be using just wordpress api, and adding callbacks to known hooks add_action('hook', 'callback_function')
