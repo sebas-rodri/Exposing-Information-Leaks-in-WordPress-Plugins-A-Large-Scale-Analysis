@@ -1,4 +1,41 @@
 import requests as req
+import time
+
+class log:
+    def status(response: req.Response, text):
+        if response.status_code == 200:
+            log.green(f"{response.request.method} {text} - Status: {response.status_code}, Response: {response.text}")
+        elif response.status_code >= 500:
+            log.red(f"{response.request.method} {text} - Status: {response.status_code}, Response: {response.text}")
+        else: 
+            log.blue(f"{response.request.method} {text} - Status: {response.status_code}, Response: {response.text}")
+    
+    def green(text):
+        print('\033[92m' + text + '\033[0m')
+    
+    def blue(text):
+        print('\033[94m' + text + '\033[0m')
+    
+    def red(text):
+        print('\033[91m' + text + '\033[0m')
+    
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+class RestAPIRunner:
+    def __init__(self, timeout: int = 120):
+        self.timeout = timeout
+    
+    
+        
 
 '''
 This part is responsible for AJAX, finding actions, and calling them
@@ -53,7 +90,7 @@ def get_default_value_for_type(arg_type: str):
 def get_wrong_value_for_type(arg_type: str):
     match arg_type:
         case "string":
-            return "123"
+            return 123
         case "null":
             return "not_null"
         case "boolean":
@@ -109,28 +146,48 @@ def call_rest_api_endpoints(possible_endpoints):
     for method, endpoints in possible_endpoints.items():
         if method == "GET":
             for endpoint in endpoints:
-                resp = req.get(endpoint)
-                print(f"GET {endpoint} - Status: {resp.status_code}, Response: {resp.text}")
+                response = req.get(endpoint)
+                log.status(response, endpoint)
+                
         elif method == "POST":
             for endpoint in endpoints:
-                resp = req.post(endpoint)
-                print(f"POST {endpoint} - Status: {resp.status_code}, Response: {resp.text}")
+                response = req.post(endpoint)
+                log.status(response, endpoint)
         elif method == "PUT":
             for endpoint in endpoints:
-                req.put(endpoint)
+                response = req.put(endpoint)
+                log.status(response, endpoint)
+                
         elif method == "DELETE":
             for endpoint in endpoints:
-                req.delete(endpoint)
+                response =req.delete(endpoint)
+                log.status(response, endpoint)
         elif method == "PATCH":
             for endpoint in endpoints:
-                req.patch(endpoint)
-    pass
+                response = req.patch(endpoint)
+                log.status(response, endpoint)
+        
+    
 
 def main():
     ajax_endpoints = find_ajax_endpoints()
     find_rest_api_endpoints()
-    
+
+def connection_test():
+    while True:
+        try:
+            response = req.get(BASE)
+            if response.status_code == 200:
+                print("Connection to WordPress successful.")
+                break
+            else:
+                print(f"Waiting for WordPress to be ready. Status code: {response.status_code}")
+        except req.exceptions.ConnectionError:
+            print("Waiting for WordPress to be ready. Connection error.")
+        time.sleep(5)
 
 
 if __name__ == "__main__":
+    print("Start Runner")
+    connection_test()
     main()

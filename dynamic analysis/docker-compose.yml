@@ -52,21 +52,32 @@ services:
       WORDPRESS_DB_NAME: exampledb
       PLUGIN_SLUG: ${PLUGIN_SLUG}
 
-
-  #runner:
-  #Container to trigger AJAX/REST dynamic Analysis
-
   watcher:
     build:
       context: .
       dockerfile: Dockerfile.watcher
     volumes:
       - wordpress:/var/www/html:ro
+      - shared_runner_watcher:/shared
+  
+  runner:
+    depends_on:
+      - watcher
+      - wordpress
+    build:
+      context: runner
+      dockerfile: Dockerfile.runner
+    network_mode: host
+    volumes:
+      - shared_runner_watcher:/shared
+
+    
 
   #Container to look out for file changes
 volumes:
   wordpress:
   db:
+  shared_runner_watcher:
 
 
   #Freshly seeded MariaDB/MySQL

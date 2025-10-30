@@ -10,6 +10,7 @@ wp plugin list --allow-root
 ###################################
 wp plugin activate benchmark-log-plugin --allow-root
 wp plugin activate ${PLUGIN_SLUG} --allow-root
+wp plugin activate function-hooking-plugin --allow-root
 
 #pretty links
 
@@ -30,4 +31,4 @@ wp user create subscriber subscriber@subscriber.de --role=subscriber --user_pass
 wp user generate --count=10
 wp post generate --count=10 --post_type=page
 
-#wp plugin activate function-hooking-plugin --allow-root
+
