@@ -3,26 +3,53 @@
  * Plugin Name: benchmark-log-plugin
  */
 
-function pluginprefix_function_to_run() {
+function pluginprefix_function_to_run()
+{
     //just for setup
 }
 
-function log_bench_event(string $event, array $data = [] ) {
+function log_bench_event(string $event, array $data = [])
+{
     $upload_dir = wp_upload_dir();
-     
-     // Create log entry
-     $log_entry = [
-         'timestamp' => date('Y-m-d H:i:s'),
-         'event' => $event,
-         'upload_dir' => $upload_dir,
-         'request_uri' => $_SERVER['REQUEST_URI'] ?? '',
-         'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
-         'data' => $data,
-     ];
-     
-     // Write to log file
-     $log_file = WP_CONTENT_DIR . '/benchmark-log.log';
-     file_put_contents($log_file, json_encode($log_entry) . "\n", FILE_APPEND | LOCK_EX);
+
+    // Create log entry
+    $log_entry = [
+        'timestamp' => date('Y-m-d H:i:s'),
+        'event' => $event,
+        'upload_dir' => $upload_dir,
+        'request_uri' => $_SERVER['REQUEST_URI'] ?? '',
+        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+        'data' => $data,
+    ];
+
+    // Write to log file
+    $log_file = WP_CONTENT_DIR . '/benchmark-log.log';
+    file_put_contents($log_file, json_encode($log_entry) . "\n", FILE_APPEND | LOCK_EX);
+}
+
+function log_bench_event_fwrite_fopen(string $event, array $data = [])
+{
+    $log_file = WP_CONTENT_DIR . "/benchmark-log.log";
+    $fp = fopen($log_file, "a");
+    if ($fp === false) {
+        echo ("Failed to open log file: " . $log_file);
+        return;
+    }
+
+    if (flock($fp, LOCK_EX)) {
+        $log_entry = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'event' => $event,
+            'upload_dir' => WP_CONTENT_DIR,
+            'request_uri' => $_SERVER['REQUEST_URI'] ?? '',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            'data' => $data,
+        ];
+
+        fwrite($fp, json_encode($log_entry) . "\n");
+        flock($fp, LOCK_UN);
+    }
+    fclose($fp);
 }
 //It seems one have to add argument count when there are multiple parameters,
 //prio is 10 
@@ -31,14 +58,16 @@ function log_bench_event(string $event, array $data = [] ) {
  * Users
  ********************************************/
 //Registration
-function benchmark_user_register_callback($user_id) {
+function benchmark_user_register_callback($user_id)
+{
     log_bench_event('user_register', [
         'user_id' => $user_id,
     ]);
 }
 
 
-function benchmark_profile_update_callback($user_id, $old_user_data, $user_data) {
+function benchmark_profile_update_callback($user_id, $old_user_data, $user_data)
+{
     //WPUser Object $old_user_data
     log_bench_event('profile_update', [
         'user_id' => $user_id,
@@ -49,32 +78,36 @@ function benchmark_profile_update_callback($user_id, $old_user_data, $user_data)
     ]);
 }
 
-function benchmark_personal_options_update_callback($user_id) {
+function benchmark_personal_options_update_callback($user_id)
+{
     log_bench_event('personal_options_update', [
         'user_id' => $user_id,
         'updated_fields' => $_POST,
     ]);
 }
 
-function benchmark_edit_user_profile_update_callback($user_id) {
+function benchmark_edit_user_profile_update_callback($user_id)
+{
     log_bench_event('edit_user_profile_update', [
         'user_id' => $user_id,
         'updated_fields' => $_POST,
     ]);
 }
 
-function benchmark_user_profile_update_errors_callback($errors, $update, $user) {
+function benchmark_user_profile_update_errors_callback($errors, $update, $user)
+{
     //WP Error Object $errors
     log_bench_event('user_profile_update_errors', [
-        'user_id' => $user->ID, 
+        'user_id' => $user->ID,
         'is_update' => $update,
-        'error_codes' => $errors->get_error_codes(),  
+        'error_codes' => $errors->get_error_codes(),
         'error_messages' => $errors->get_error_messages(),
         'attempted_fields' => $_POST,
     ]);
 }
 
-function benchmark_wp_login_callback($user_login, $user) {
+function benchmark_wp_login_callback($user_login, $user)
+{
     log_bench_event('wp_login', [
         'user_login' => $user_login,
         'user_id' => $user->ID,
@@ -83,7 +116,8 @@ function benchmark_wp_login_callback($user_login, $user) {
     ]);
 }
 
-function benchmark_wp_login_failed_callback($username, $error) {
+function benchmark_wp_login_failed_callback($username, $error)
+{
     log_bench_event('wp_login_failed', [
         'username' => $username,
         'error_code' => $error->get_error_code(),
@@ -91,13 +125,15 @@ function benchmark_wp_login_failed_callback($username, $error) {
     ]);
 }
 
-function benchmark_wp_logout_callback($user_id) {
+function benchmark_wp_logout_callback($user_id)
+{
     log_bench_event('wp_logout', [
         'user_id' => $user_id,
     ]);
 }
 
-function benchmark_lostpassword_post_callback($errors, $user_data) {
+function benchmark_lostpassword_post_callback($errors, $user_data)
+{
     log_bench_event('lostpassword_post', [
         'user_login' => $user_data->user_login ?? '',
         'user_email' => $user_data->user_email ?? '',
@@ -107,12 +143,13 @@ function benchmark_lostpassword_post_callback($errors, $user_data) {
     ]);
 }
 
-function benchmark_password_reset_callback($user, $new_pass) {
+function benchmark_password_reset_callback($user, $new_pass)
+{
     log_bench_event('password_reset', [
         'user_id' => $user->ID,
         'user_login' => $user->user_login,
         'user_email' => $user->user_email,
-        'new_password'=> $new_pass,
+        'new_password' => $new_pass,
     ]);
 }
 
@@ -192,12 +229,12 @@ add_action('edit_comment', function ($comment_id, $data) {
  * AJAX
  ********************************************/
 // Logged-in users
-add_action('wp_ajax_test', function() {
+add_action('wp_ajax_test', function () {
     echo 'Hello from wp_ajax_test';
     wp_die();
 });
 // Guests (not logged in)
-add_action('wp_ajax_nopriv_test', function() {
+add_action('wp_ajax_nopriv_test', function () {
     echo 'Hello from wp_ajax_nopriv_test';
     wp_die();
 });
@@ -205,12 +242,28 @@ add_action('wp_ajax_nopriv_test', function() {
  * REST
  ********************************************/
 
-//GET
-add_action('rest_api_init', function() {
+function get_echo_arguments_post()
+{
+    $args = array();
+    $args['all_possible_values'] = array(
+        'description' => esc_html__('Evrything is possible', 'my-text-domain'),
+        'type' => 'string'
+    );
+    $args['enum'] = array(
+        'description' => esc_html__('just enum', 'my-text-domain'),
+        'type' => 'string',
+        'enum' => array("hello", "hi", "hola"),
+    );
+    return $args;
+}
+
+function register_all_routes()
+{
+    //GET
     register_rest_route('benchmark/v1', '/test', [
-        'methods'  => 'GET',
-        'callback' => function( WP_REST_Request $request ) {
-            log_bench_event('benchmark/v1/test',[]);
+        'methods' => 'GET',
+        'callback' => function (WP_REST_Request $request) {
+            log_bench_event('benchmark/v1/test', []);
             return rest_ensure_response([
                 'success' => true,
                 'message' => 'Hello from benchmark/v1/test',
@@ -218,18 +271,41 @@ add_action('rest_api_init', function() {
         },
         'permission_callback' => '__return_true',
     ]);
-});
+    //POST
+    register_rest_route('benchmark/v1', '/echo', [
+        'methods' => 'POST',
+        'callback' => function (WP_REST_Request $request) {
+
+            if (isset($request['all_possible_values'])) {
+                log_bench_event('benchmark/v1/echo?all_possible_values', []);
+                return rest_ensure_response(['message' => $request['all_possible_values']]);
+            } elseif (isset($request['enum'])) {
+                log_bench_event('benchmark/v1/echo?enum', []);
+
+                if (in_array($request['enum'], ['hello', 'hi', 'hola'])) {
+                    return rest_ensure_response(['message' => $request['enum']]);
+                } else {
+                    return rest_ensure_response(['message' => 'wrong arg']);
+                }
+            }
+            return rest_ensure_response(['message'=> 'set one of the args']);
+        },
+        'args' => get_echo_arguments_post()
+    ]);
+}
+
+add_action('rest_api_init', 'register_all_routes');
 
 //POST
 
 register_activation_hook(
-	__FILE__,
-	'pluginprefix_function_to_run'
+    __FILE__,
+    'pluginprefix_function_to_run'
 );
 
 register_deactivation_hook(
-	__FILE__,
-	'pluginprefix_function_to_run'
+    __FILE__,
+    'pluginprefix_function_to_run'
 );
 
 
