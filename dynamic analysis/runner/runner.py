@@ -37,7 +37,8 @@ class RestAPIRunner:
     def __init__(self, timeout: int = 120):
         self.timeout = timeout
     
-    
+
+TIMEOUT = 2 #Low, Due to high number of requests
         
 
 '''
@@ -134,25 +135,81 @@ def create_possible_routes(base_url: str, details: dict) -> dict:
         args = endpoint_details.get("args", {})
         methods = endpoint_details.get("methods", [])
         if args == []:
-            possible_routes[methods[0]].append(f"{base_url}")
+            possible_routes[methods[0]].append({"url": base_url})
             continue
         for method in methods:
-            all_args_route1 = base_url + "?"
-            all_args_route2 = base_url + "?"
-            for arg, arg_details in args.items():
-                type_ = arg_details.get("type", "string")
-                format = arg_details.get("format", None)
-                if "enum" in arg_details:
-                    for enum_value in arg_details["enum"]:
-                        possible_routes[method].append(f"{base_url}?{arg}={enum_value}")
-                possible_routes[method].append(f"{base_url}?{arg}={get_default_value_for_type(type_, format)}")
-                all_args_route1 += f"{arg}={get_default_value_for_type(type_, format)}&"
-                all_args_route2 += f"{arg}={get_wrong_value_for_type(type_)}&"
-                possible_routes[method].append(f"{base_url}?{arg}={get_wrong_value_for_type(type_)}")
+            if method == "GET":
+                all_args_route1 = base_url + "?"
+                all_args_route2 = base_url + "?"
+                for arg, arg_details in args.items():
+                    arg_type = arg_details.get("type", "string")
+                    arg_format = arg_details.get("format", None)
+                    if "enum" in arg_details:
+                        for enum_value in arg_details["enum"]:
+                            possible_routes[method].append({
+                                "url": f"{base_url}?{arg}={enum_value}"
+
+                            })
+                    valid_val = get_default_value_for_type(arg_type, arg_format)
+                    invalid_val = get_wrong_value_for_type(arg_type)
+                    
+                    possible_routes[method].append({
+                        "url": f"{base_url}?{arg}={valid_val}"
+                    })
+                    possible_routes[method].append({
+                        "url": f"{base_url}?{arg}={invalid_val}"
+                    })
+                    
+                    all_args_route1 += f"{arg}={valid_val}&"
+                    all_args_route2 += f"{arg}={invalid_val}&"
+                    
+                possible_routes[method].append({"url": all_args_route1.rstrip("&")}) #delete last &
+                possible_routes[method].append({"url": all_args_route2.rstrip("&")})
+                possible_routes[method].append({"url": base_url})
+            else: #POST/PATCH/PUT/DELETE
+                for arg, arg_details in args.items():
+                    arg_type = arg_details.get("type", "string")
+                    arg_format = arg_details.get("format")
+                    
+                    if "enum" in arg_details:
+                        for enum_value in arg_details["enum"]:
+                            possible_routes[method].append({
+                                "url": base_url,
+                                "data": {arg: enum_value}
+                            })
+
+                    valid_val = get_default_value_for_type(arg_type, arg_format)
+                    invalid_val = get_wrong_value_for_type(arg_type)
+                    
+                    possible_routes[method].append({
+                        "url": base_url,
+                        "data": {arg: valid_val}
+                    })
+                    possible_routes[method].append({
+                        "url": base_url,
+                        "data": {arg: invalid_val}
+                    })
                 
-            possible_routes[method].append(all_args_route1.rstrip("&")) #delete last &
-            possible_routes[method].append(all_args_route2.rstrip("&"))
-        possible_routes[method].append(f"{base_url}") #without the argument
+                all_args_valid = {}
+                all_args_invalid = {}
+                for arg, arg_details in args.items():
+                    arg_type = arg_details.get("type", "string")
+                    arg_format = arg_details.get("format")
+                    all_args_valid[arg] = get_default_value_for_type(arg_type, arg_format)
+                    all_args_invalid[arg] = get_wrong_value_for_type(arg_type)
+                
+                if all_args_valid:
+                    possible_routes[method].append({
+                        "url": base_url,
+                        "data": all_args_valid
+                    })
+                    possible_routes[method].append({"url": base_url, 
+                        "data": all_args_invalid
+                    })
+                
+                #No data
+                possible_routes[method].append({"url": base_url, "data": {}})
+                    
                 
     return possible_routes
 
@@ -172,29 +229,37 @@ def find_rest_api_endpoints() -> list:
 
 def call_rest_api_endpoints(possible_endpoints):
     #create filewrite on volume, so watcher can know which endpoints were called
-    for method, endpoints in possible_endpoints.items():
-        if method == "GET":
-            for endpoint in endpoints:
-                response = req.get(endpoint)
-                log.status(response, endpoint)
-                
-        elif method == "POST":
-            for endpoint in endpoints:
-                response = req.post(endpoint)
-                log.status(response, endpoint)
-        elif method == "PUT":
-            for endpoint in endpoints:
-                response = req.put(endpoint)
-                log.status(response, endpoint)
-                
-        elif method == "DELETE":
-            for endpoint in endpoints:
-                response =req.delete(endpoint)
-                log.status(response, endpoint)
-        elif method == "PATCH":
-            for endpoint in endpoints:
-                response = req.patch(endpoint)
-                log.status(response, endpoint)
+    for method, endpoint_configs in possible_endpoints.items():
+        for config in endpoint_configs:
+            print(f"Calling {method} {config}")
+            url = config["url"]
+            
+            try:
+                if method == "GET":
+                    response = req.get(url, timeout=30)
+                    
+                elif method == "POST":
+                    data = config.get("data", {})
+                    # Try both JSON and form data
+                    response = req.post(url, json=data, timeout=30)
+                    log.status(response, f"{url} (JSON: {data})")
+                    if data:
+                        response = req.post(url, data=data, timeout=30)
+                        log.status(response, f"{url} (Form: {data})")
+                    
+                elif method == "PUT":
+                    data = config.get("data", {})
+                    response = req.put(url, json=data, timeout=30)
+                    
+                elif method == "DELETE":
+                    response = req.delete(url, timeout=30)
+                    
+                elif method == "PATCH":
+                    data = config.get("data", {})
+                    response = req.patch(url, json=data, timeout=30)
+                log.status(response, url) 
+            except req.exceptions.RequestException as e:
+                log.red(f"Error calling {method} {url}: {e}")
         
     
 
