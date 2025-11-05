@@ -56,13 +56,16 @@ class AjaxRunner:
 def write_test(data):
     '''Passed data should follow format:
     {interface: , method: , url: , data: }'''
+    if not os.path.exists("shared"):
+        exit("/shared/ Volume not mounted")
     if not os.path.exists(FILE_PATH):
-        exit("Volume not mounted")
+        open(FILE_PATH, "w").close()
+        
     with open(FILE_PATH, "+w") as f:
         f.write(json.dumps(data))
     
 
-FILE_PATH = "current_test.txt"
+FILE_PATH = "shared/current_test.txt"
 TIMEOUT = 2 #Low, Due to high number of requests
         
 
@@ -291,7 +294,7 @@ def call_rest_api_endpoints(possible_endpoints):
     
 
 def main():
-    
+    time.sleep(2) #Wait for watcher to be ready
     ajax_endpoints = find_ajax_endpoints()
     find_rest_api_endpoints()
     while True:

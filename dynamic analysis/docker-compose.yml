@@ -59,6 +59,8 @@ services:
     volumes:
       - wordpress:/var/www/html:ro
       - shared_runner_watcher:/shared
+    environment:
+      PLUGIN_SLUG: ${PLUGIN_SLUG}
   
   runner:
     depends_on:
