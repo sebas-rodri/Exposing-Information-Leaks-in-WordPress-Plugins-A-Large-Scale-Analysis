@@ -36,11 +36,14 @@ for i, slug in enumerate(slugs):
         num_downloads = int(info_data.get("Downloads").replace(',', ''))
         active_installations = int(info_data.get("Active Installs").replace(',', ''))
         
-    
+    #Save plugin info
+    con.sql("""
+            INSERT OR IGNORE INTO plugins (name, slug, version, download_link, num_downloads, active_installations) VALUES (?, ?, ?, ?, ?, ?);
+            """, params = (name, info_data.get("slug"), version, download_link, num_downloads, active_installations))
     #Save run
     con.sql("""
-            INSERT INTO semgrep_runs (run_id, plugin_name, plugin_slug, plugin_version, plugin_download_link, plugin_num_dowloads, active_installations, error_count, errors) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-            """, params = (i, name, info_data.get("slug"), version, download_link, num_downloads, active_installations, error_count, json.dumps(errors if errors else None)))
+            INSERT INTO semgrep_runs (run_id, plugin_slug, error_count, errors) VALUES (?, ?, ?, ?);
+            """, params = (i, info_data.get("slug"), error_count, json.dumps(errors if errors else None)))
 
     results = semgrep_data.get("results") #semgrep results/ each run can have multiple findings
     
@@ -55,7 +58,7 @@ for i, slug in enumerate(slugs):
         lines = result.get("extra").get("lines")
         
         con.sql("""
-                INSERT INTO findings (run_id, rule_id, file_path, start_line, end_line, message, lines) VALUES (?, ?, ?, ?, ?, ?, ?);
+                INSERT INTO findings_semgrep (run_id, rule_id, file_path, start_line, end_line, message, lines) VALUES (?, ?, ?, ?, ?, ?, ?);
                 """, params = (run_id, rule_id, file_path, start_line, end_line, message, lines))
     
     

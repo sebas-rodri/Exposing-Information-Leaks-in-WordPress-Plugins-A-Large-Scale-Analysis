@@ -15,16 +15,22 @@ con.sql("""
 
 #Create Tables
 con.sql("""
+        CREATE TABLE IF NOT EXISTS plugins (
+            name VARCHAR NOT NULL,
+            slug VARCHAR NOT NULL UNIQUE,
+            version VARCHAR NOT NULL,
+            download_link VARCHAR NOT NULL,
+            num_downloads INTEGER NOT NULL,
+            active_installations INTEGER NOT NULL,
+            PRIMARY KEY (slug)
+            );
+            
         CREATE TABLE IF NOT EXISTS semgrep_runs (
             run_id INTEGER DEFAULT(nextval('run_ids')) PRIMARY KEY,
-            plugin_name VARCHAR NOT NULL,
-            plugin_slug VARCHAR NOT NULL UNIQUE,
-            plugin_version VARCHAR NOT NULL,
-            plugin_download_link VARCHAR NOT NULL,
-            plugin_num_dowloads INTEGER NOT NULL,
-            active_installations INTEGER NOT NULL,
+            plugin_slug VARCHAR NOT NULL,
             error_count INTEGER NOT NULL,
-            errors VARCHAR
+            errors VARCHAR,
+            FOREIGN KEY (plugin_slug) REFERENCES plugins (slug)
             );
         
         CREATE TABLE IF NOT EXISTS rules (
@@ -32,7 +38,7 @@ con.sql("""
             severity VARCHAR NOT NULL CHECK(severity IN ['INFO', 'ERROR', 'WARNING']),
             sink VARCHAR
         );
-        CREATE TABLE IF NOT EXISTS findings (
+        CREATE TABLE IF NOT EXISTS findings_semgrep (
             finding_id INTEGER DEFAULT(nextval('finding_ids')) PRIMARY KEY,
             run_id INTEGER NOT NULL,
             rule_id VARCHAR NOT NULL,
