@@ -4,6 +4,17 @@ import json
 import os
 import datetime
 
+"""
+REST endpoints called
+REST ENDPOINTS with 200
+
+RESULTS -> Alles Abspeichern als zip aber mit sinvollem Name
+Parsen von JSON am ende und abspeichern in duckdb
+
+
+AJAX ENDPOINTS called
+"""
+
 class log:
     def status(response: req.Response, text):
         if response.status_code == 200:
@@ -36,8 +47,22 @@ class log:
 class RestAPIRunner:
     def __init__(self, timeout: int = 120):
         self.timeout = timeout
+
+class AjaxRunner:
+    def __init__(self, timeout: int = 120):
+        self.timeout = timeout
+
+
+def write_test(data):
+    '''Passed data should follow format:
+    {interface: , method: , url: , data: }'''
+    if not os.path.exists(FILE_PATH):
+        exit("Volume not mounted")
+    with open(FILE_PATH, "+w") as f:
+        f.write(json.dumps(data))
     
 
+FILE_PATH = "current_test.txt"
 TIMEOUT = 2 #Low, Due to high number of requests
         
 
@@ -235,6 +260,8 @@ def call_rest_api_endpoints(possible_endpoints):
             url = config["url"]
             
             try:
+                write_data = {"interface": "REST", "method": method, "url": config.get("url"), "data": config.get("data", {})}
+                write_test(write_data)
                 if method == "GET":
                     response = req.get(url, timeout=30)
                     
@@ -264,6 +291,7 @@ def call_rest_api_endpoints(possible_endpoints):
     
 
 def main():
+    
     ajax_endpoints = find_ajax_endpoints()
     find_rest_api_endpoints()
     while True:
