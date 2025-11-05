@@ -1,5 +1,8 @@
 import requests as req
 import time
+import json
+import os
+import datetime
 
 class log:
     def status(response: req.Response, text):
@@ -24,7 +27,7 @@ class log:
     OKCYAN = '\033[96m'
     OKGREEN = '\033[92m'
     WARNING = '\033[93m'
-    FAIL = '\033[91m'
+    FAIL = '\033[91m'   
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
@@ -69,10 +72,29 @@ def get_routes(namespaces: list) -> dict:
 #regex routes
 #batch also excluded
 
-def get_default_value_for_type(arg_type: str):
+
+def get_string_for_format(format: str):
+    '''returns a default string for a given format, only support
+    following https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#format'''
+    match format:
+        case "date-time":
+            return datetime.datetime.now().isoformat()
+        case "uri":
+            return "http://example.com"
+        case "email":
+            return "test@test.com"
+        case "ip":
+            return "127.0.0.1"
+        case "uuid":
+            return "123e4567-e89b-12d3-a456-426614174000"
+        case "hex-color":
+            return "#ffffff"
+    return "test"
+
+def get_default_value_for_type(arg_type: str, format: str = None):
     match arg_type:
         case "string":
-            return "test"
+            return get_string_for_format(format) if format else "test"
         case "null":
             return None
         case "boolean":
@@ -114,15 +136,22 @@ def create_possible_routes(base_url: str, details: dict) -> dict:
         if args == []:
             possible_routes[methods[0]].append(f"{base_url}")
             continue
-        for arg, arg_details in args.items():
-            for method in methods:
+        for method in methods:
+            all_args_route1 = base_url + "?"
+            all_args_route2 = base_url + "?"
+            for arg, arg_details in args.items():
                 type_ = arg_details.get("type", "string")
+                format = arg_details.get("format", None)
                 if "enum" in arg_details:
                     for enum_value in arg_details["enum"]:
                         possible_routes[method].append(f"{base_url}?{arg}={enum_value}")
-                possible_routes[method].append(f"{base_url}?{arg}={get_default_value_for_type(type_)}")
-                possible_routes[method].append(f"{base_url}?{arg}={get_wrong_value_for_type(type_)}") #empty value
-        
+                possible_routes[method].append(f"{base_url}?{arg}={get_default_value_for_type(type_, format)}")
+                all_args_route1 += f"{arg}={get_default_value_for_type(type_, format)}&"
+                all_args_route2 += f"{arg}={get_wrong_value_for_type(type_)}&"
+                possible_routes[method].append(f"{base_url}?{arg}={get_wrong_value_for_type(type_)}")
+                
+            possible_routes[method].append(all_args_route1.rstrip("&")) #delete last &
+            possible_routes[method].append(all_args_route2.rstrip("&"))
         possible_routes[method].append(f"{base_url}") #without the argument
                 
     return possible_routes
@@ -172,18 +201,19 @@ def call_rest_api_endpoints(possible_endpoints):
 def main():
     ajax_endpoints = find_ajax_endpoints()
     find_rest_api_endpoints()
+    while True:
+        time.sleep(60)
 
 def connection_test():
     while True:
         try:
             response = req.get(BASE)
             if response.status_code == 200:
-                print("Connection to WordPress successful.")
                 break
             else:
                 print(f"Waiting for WordPress to be ready. Status code: {response.status_code}")
         except req.exceptions.ConnectionError:
-            print("Waiting for WordPress to be ready. Connection error.")
+            print("Connection error.")
         time.sleep(5)
 
 
