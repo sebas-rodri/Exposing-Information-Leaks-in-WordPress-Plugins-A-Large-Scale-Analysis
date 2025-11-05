@@ -11,6 +11,9 @@ con = duckdb.connect(sys.argv[1])
 con.sql("""
         CREATE SEQUENCE IF NOT EXISTS run_ids START 1;
         CREATE SEQUENCE IF NOT EXISTS finding_ids START 1;
+        CREATE SEQUENCE IF NOT EXISTS dynamic_analysis_ids START 1;
+        CREATE SEQUENCE IF NOT EXISTS rest_finding_ids START 1;
+        CREATE SEQUENCE IF NOT EXISTS ajax_findings_ids START 1;
         """)
 
 #Create Tables
@@ -50,8 +53,36 @@ con.sql("""
             FOREIGN KEY (rule_id) REFERENCES rules (rule_id),
             FOREIGN KEY (run_id) REFERENCES semgrep_runs (run_id)
             );
+            
+        CREATE TABLE IF NOT EXISTS dynamic_analysis(
+            plugin_slug VARCHAR NOT NULL PRIMARY KEY,
+            num_unique_rest_endpoints INTEGER NOT NULL,
+            num_rest_enpoints_called INTEGER NOT NULL,
+            num_rest_endpoints_http_ok INTEGER NOT NULL,
+            num_rest_endpoints_http_other INTEGER GENERATE ALWAYS AS (num_rest_enpoints_called - num_rest_endpoints_http_ok) ViRTUAL,
+            num_ajax_endpoints INTEGER NOT NULL,
+            num_ajax_endpoints_called INTEGER NOT NULL,
+            FOREIGN KEY (plugin_slug) REFERENCES plugins (slug)
+            );
+            
+        CREATE TABLE IF NOT EXISTS findings_rest(
+                finding_id INTEGER DEFAULT(nextval('rest_finding_ids')) PRIMARY KEY,
+                plugin_slug VARCHAR NOT NULL,
+                url VARCHAR NOT NULL,
+                http_method VARCHAR NOT NULL,
+                data VARCHAR,
+                name_of_changed_file VARCHAR,
+                type_of_operation VARCHAR CHECK(type_of_operation IN ['create', 'modify', 'delete', 'move']),
+                FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (plugin_slug)
+            );
+            
+
+        CREATE TABLE IF NOT EXISTS findings_ajax(
+                finding_id INTEGER DEFAULT(nextval('ajax_findings_ids')) PRIMARY KEY,
+                plugin_slug VARCHAR NOT NULL,
+                FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (plugin_slug)
+            );
         
-        -- This is the mapping for the rules
         """)
 
 con.close()
