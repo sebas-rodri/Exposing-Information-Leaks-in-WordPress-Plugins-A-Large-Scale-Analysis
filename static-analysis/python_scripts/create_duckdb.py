@@ -14,6 +14,7 @@ con.sql("""
         CREATE SEQUENCE IF NOT EXISTS dynamic_analysis_ids START 1;
         CREATE SEQUENCE IF NOT EXISTS rest_finding_ids START 1;
         CREATE SEQUENCE IF NOT EXISTS ajax_findings_ids START 1;
+        CREATE SEQUENCE IF NOT EXISTS ajax_routes_ids START 1;
         """)
 
 #Create Tables
@@ -27,6 +28,22 @@ con.sql("""
             active_installations INTEGER NOT NULL,
             PRIMARY KEY (slug)
             );
+        
+        CREATE TABLE IF NOT EXISTS ajax_routes (
+            route_id INTEGER DEFAULT(nextval('ajax_routes_ids')) PRIMARY KEY,
+            plugin_slug VARCHAR NOT NULL,
+            action VARCHAR NOT NULL,
+            FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (slug)
+        );
+        
+        CREATE TABLE IF NOT EXISTS ajax_route_arguments (
+            route_id INTEGER NOT NULL,
+            method VARCHAR NOT NULL, -- POST/GET etc.
+            arg_name VARCHAR NOT NULL,
+            PRIMARY KEY (route_id, method, arg_name),
+            FOREIGN KEY (route_id) REFERENCES ajax_routes (route_id)
+            
+        );
             
         CREATE TABLE IF NOT EXISTS semgrep_runs (
             run_id INTEGER DEFAULT(nextval('run_ids')) PRIMARY KEY,
@@ -73,6 +90,7 @@ con.sql("""
                 data VARCHAR,
                 name_of_changed_file VARCHAR,
                 type_of_operation VARCHAR CHECK(type_of_operation IN ['create', 'modify', 'delete', 'move']),
+                zip_file_number INTEGER NOT NULL,
                 FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (plugin_slug)
             );
             
