@@ -11,7 +11,9 @@ do
         echo "_____________________________________________________";echo "Current Test"; cat "$file" 
     else #Some file in wp-content changed
         #json
+        touch .change
         zip_counter=$((zip_counter + 1))
+
         jq -c --arg file "$file" --arg event "$event" --arg zip_counter "$zip_counter" \
             '. + {name_of_changed_file: $file, type_of_operation: $event, zip_counter: $zip_counter}' \
             /shared/current_test.txt >> /shared/dynamic_test_findings.jsonl
@@ -19,7 +21,8 @@ do
         interface=$(jq -r .interface /shared/current_test.txt)
         mkdir -p /shared/zip_files/${PLUGIN_SLUG}
         echo "zip_counter = $zip_counter"
-        (zip /shared/zip_files/${PLUGIN_SLUG}/${interface}_${zip_counter}.zip $file)
+        zip /shared/zip_files/${PLUGIN_SLUG}/${interface}_${zip_counter}.zip $file #Maybe add flag -0 for no compression add feedback touch .change for runner if there is one sleep and check again
+        rm .change
     fi
 
     echo "[$time] File changed: $file (Event: $event)"
