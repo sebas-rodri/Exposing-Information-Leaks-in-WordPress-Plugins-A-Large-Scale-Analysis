@@ -99,6 +99,12 @@ con.sql("""
         CREATE TABLE IF NOT EXISTS findings_ajax(
                 finding_id INTEGER DEFAULT(nextval('ajax_findings_ids')) PRIMARY KEY,
                 plugin_slug VARCHAR NOT NULL,
+                url VARCHAR NOT NULL,
+                http_method VARCHAR NOT NULL,
+                data VARCHAR,
+                name_of_changed_file VARCHAR,
+                type_of_operation VARCHAR CHECK(type_of_operation IN ['create', 'modify', 'delete', 'move']),
+                zip_file_number INTEGER NOT NULL,
                 FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (plugin_slug)
             );
         
