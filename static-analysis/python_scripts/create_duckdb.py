@@ -33,6 +33,7 @@ con.sql("""
             route_id INTEGER DEFAULT(nextval('ajax_routes_ids')) PRIMARY KEY,
             plugin_slug VARCHAR NOT NULL,
             action VARCHAR NOT NULL,
+            priv BOOLEAN NOT NULL,
             FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (slug)
         );
         
