@@ -4,7 +4,10 @@ import re
 
 data = json.load(open("/Users/sebastianrodriguez/Desktop/Informatik Studium/Semester6/Bachelorarbeit/Exposing-Information-Leaks-in-WordPress-Plugins-A-Large-Scale-Analysis/static-analysis/ajax.json"))
 slug = os.environ['slug']
-print(slug)
+closure_output = f"./results/{slug}/ajax_closure.json"
+semgrep_rules_path_base =  f"./results/{slug}/semgrep-rules-ajax/"
+
+os.makedirs(semgrep_rules_path_base, exist_ok=True)
 
 pattern = re.compile(
     r'\$_(?P<method>REQUEST|POST|FILES|GET)\s*'
@@ -56,9 +59,37 @@ for wp_ajax, closure in ajax_closures.items():
         args.append([method, arg])
     result_closure_json[slug][ajax_route] = {"priv": priv, "action": ajax_route, "args": args}
 
-closure_output = f"./results/{slug}/ajax_closure.json"
 #os.makedirs(os.path.dirname(closure_output), exist_ok=True)
 with open(closure_output, 'w') as f:
     json.dump(result_closure_json, f, indent=2)
+
+
+
+#Make Semgrep Rule depending on $NAME
+for hook, function_name in ajax_function_names.items():
+    hook = hook.strip("'\"")
+    yaml = f"""
+rules:
+  - id: {hook}
+    languages:
+      - php
+    severity: ERROR
+    message: |
+      Semgrep found a match
+    patterns:
+      - patterns:
+          - pattern: function $FUNC (...){{...}}
+          - patterns:
+              - pattern: $METHOD["$ARG"]
+              - metavariable-pattern:
+                  metavariable: $METHOD
+                  pattern-regex: \$_(REQUEST|POST|FILES|GET)
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: {function_name}
+    """
+    open(semgrep_rules_path_base+f"{hook}.yml", "w").write(yaml)
+    
+
 print(result_closure_json)
 print(ajax_function_names)
