@@ -1,0 +1,20 @@
+rules:
+  - id: second-step
+    languages:
+      - php
+    severity: ERROR
+    message: |
+      Semgrep found a match
+    patterns:
+      - patterns:
+          - pattern: function $FUNC (...){...}
+          - patterns:
+              - pattern: $METHOD["$ARG"]
+              - metavariable-pattern:
+                  metavariable: $METHOD
+                  pattern-regex: \$_(REQUEST|POST|FILES|GET)
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: ajax_test
+
+

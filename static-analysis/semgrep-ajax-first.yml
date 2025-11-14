@@ -1,0 +1,22 @@
+rules:
+  - id: test
+    languages:
+      - php
+    severity: ERROR
+    message: Either arguments for ajax or ajax_route itself
+    pattern-either:
+      - patterns:
+          - patterns:
+              - patterns:
+                  - pattern: add_action($HOOK,'$NAME')
+                  - focus-metavariable: $HOOK
+          - metavariable-pattern:
+              metavariable: $HOOK
+              pattern-regex: "'wp_ajax.*'"
+      - patterns:
+          - patterns:
+              - pattern: add_action($HOOK,$CLOSURE)
+              - focus-metavariable: $CLOSURE
+          - metavariable-pattern:
+              metavariable: $HOOK
+              pattern-regex: "'wp_ajax.*'"
