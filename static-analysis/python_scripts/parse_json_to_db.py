@@ -87,16 +87,55 @@ for i, slug in enumerate(slugs):
             
     
         
+    ajax_function_path = os.path.join(result_dir, slug, "ajax_function.json")
+    with open(ajax_function_path, 'r') as f:
+        ajax_function_data = json.load(f)
     
-    # ajax_findings_dir = os.path.join(result_dir, slug, "ajax-findings")
+    for ajax_route in ajax_function_data:
+        priv = ajax_route.get("priv")
+        action = ajax_route.get("action")
+        con.sql("""
+                INSERT INTO ajax_routes (plugin_slug, action, priv) VALUES (?, ?, ?)
+                """, params= (slug, action, priv))
     
-    # for finding in os.listdir(ajax_findings_dir):
-    #     pass
-    # ajax_findings = ajax_findings_data.get("results")
+    ajax_findings_dir = os.path.join(result_dir, slug, "ajax-findings")
+    if not os.path.isdir(ajax_findings_dir):
+        continue
+    for finding in os.listdir(ajax_findings_dir):
+        finding_path = os.path.join(ajax_findings_dir, finding)
+        with open(finding_path) as f:
+            ajax_finding = json.load(f)
+        results = ajax_finding.get("results")
+        
+        
+
+        for ajax_route in results:
+            check_id = ajax_route.get("check_id")
+            hook = check_id.split("semgrep-rules-ajax.")[-1]
+            if hook.startswith("wp_ajax_nopriv_"):
+                priv = False
+                action = hook.replace("wp_ajax_nopriv_", "", 1)
+            elif hook.startswith("wp_ajax_"):
+                priv = True
+                action = hook.replace("wp_ajax_", "", 1)
+            print(action, priv)
+            route_id = con.sql("""
+                           SELECT route_id FROM ajax_routes WHERE plugin_slug = ? AND action = ? AND priv = ?
+                           """,params=(slug, action, priv)).fetchone()[0]
+            metavars = ajax_route.get("extra").get("metavars")
+            action = metavars.get("$FUNC").get("abstract_content")
+            method = metavars.get("$1").get("abstract_content")
+            arg = metavars.get("$ARG").get("abstract_content")
+            
+            try:
+                con.sql("""
+                    INSERT INTO ajax_route_arguments (route_id, method, arg_name) VALUES (?,?,?)
+                    """, params=(route_id, method, arg))
+            except Exception as e:
+                print(f"Error inserting ajax route argument for route_id {route_id}, method {method}, arg {arg}: {e}")
+            
+            
     
-    # for ajax_finding in ajax_findings:
-    #     extra = ajax_finding.get("extra")
-    #     metavars = extra.get("metavars")
         
     
     ################END RESULTS PARSING##################

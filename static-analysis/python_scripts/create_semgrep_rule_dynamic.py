@@ -5,6 +5,7 @@ import re
 slug = os.environ['slug']
 data = json.load(open(f"./results/{slug}/ajax.json"))
 closure_output = f"./results/{slug}/ajax_closure.json"
+ajax_function_output = f"./results/{slug}/ajax_function.json"
 semgrep_rules_path_base =  f"./results/{slug}/semgrep-rules-ajax/"
 
 os.makedirs(semgrep_rules_path_base, exist_ok=True)
@@ -66,6 +67,7 @@ with open(closure_output, 'w') as f:
 
 
 #Make Semgrep Rule depending on $NAME
+ajax_route_array = []
 for hook, function_name in ajax_function_names.items():
     hook = hook.strip("'\"")
     yaml = f"""
@@ -89,7 +91,18 @@ rules:
               regex: {function_name}
     """
     open(semgrep_rules_path_base+f"{hook}.yml", "w").write(yaml)
-    
+    #Save ajax_routes
+    if hook.startswith("wp_ajax_nopriv_"):
+        priv = False
+        action = hook.replace("wp_ajax_nopriv_", "", 1)
+    elif hook.startswith("wp_ajax_"):
+        priv = True
+        action = hook.replace("wp_ajax_", "", 1)
+    ajax_route_array.append({"action": action, "priv": priv})
+
+with open(ajax_function_output, 'w') as f:
+    json.dump(ajax_route_array, f, indent=2)
+
 
 print("CLOSURE:"+ str(result_closure_json) + "\n\n\n")
 print(ajax_function_names)
