@@ -16,8 +16,18 @@ do
     echo "Analyzing plugin number $i"
     python3 download-unzip-and-infocreation.py plugins_sorted.csv $i
     slug=$(python3 get_slug.py plugins_sorted.csv $i)
+    export slug;
     #I am actually not sure about excluding the tests directory
     semgrep --config=semgrep-rules.yml --json  --include='*.php' --exclude='*/vendor/*' --exclude='*/tests/*' --output="./results/$slug/semgrep.json" ./plugins
+    semgrep --config=semgrep-ajax-first.yml --json  --include='*.php' --exclude='*/vendor/*' --exclude='*/tests/*' --output="./results/$slug/ajax.json" ./plugins
+    python create_semgrep_rule_dynamic.py
+    j=0
+    for file in "./results/$slug/semgrep-rules-ajax/"*; do
+        if [ -f "$file" ]; then     
+        semgrep --config=$file --json  --include='*.php' --exclude='*/vendor/*' --exclude='*/tests/*' --output="./results/$slug/ajax-findings/$j.json" ./plugins
+        j=$(( j + 1))
+        fi
+    done 
     rm -rf plugins
 done
 
@@ -25,7 +35,6 @@ done
 python3 parse_json_to_db.py results
 #aggregate joern output
 
-#Data Analysis over the findings in .db
 
 #Keeps Docker container Running
 exec tail -f /dev/null

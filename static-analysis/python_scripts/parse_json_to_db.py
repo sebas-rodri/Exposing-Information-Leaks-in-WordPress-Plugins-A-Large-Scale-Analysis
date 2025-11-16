@@ -22,6 +22,8 @@ print(f"Found {len(slugs)} directories to process.")
 
 for i, slug in enumerate(slugs):
     info_path = os.path.join(result_dir, slug, "info.json")
+    
+    ##################RESULTS PARSING##################
     semgrep_path = os.path.join(result_dir, slug, "semgrep.json")
     with open(semgrep_path, 'r') as f:
         semgrep_data = json.load(f)
@@ -60,6 +62,45 @@ for i, slug in enumerate(slugs):
         con.sql("""
                 INSERT INTO findings_semgrep (run_id, rule_id, file_path, start_line, end_line, message, lines) VALUES (?, ?, ?, ?, ?, ?, ?);
                 """, params = (run_id, rule_id, file_path, start_line, end_line, message, lines))
+    
+    ####################JUST AJAX FINDINGS PARSING####################
+    ##Closure
+    ajax_closure_path = os.path.join(result_dir, slug, "ajax_closure.json")
+    
+    
+    with open(ajax_closure_path, 'r') as f:
+        ajax_closure_data = json.load(f)
+    
+    for ajax_route in ajax_closure_data:
+        priv = ajax_route.get("priv")
+        action = ajax_route.get("action")
+        result = con.sql("""
+                INSERT INTO ajax_routes (plugin_slug, action, priv) VALUES (?, ?, ?)
+                RETURNING route_id
+                """, params= (slug, action, priv)).fetchone()
+        args = ajax_route.get("args")
+        route_id = result[0]
+        for method_arg in args:
+            con.sql("""
+                    INSERT INTO ajax_route_arguments (route_id, method, arg_name) VALUES (?,?,?)
+                    """, params=(route_id, method_arg[0], method_arg[1]))
+            
+    
+        
+    
+    # ajax_findings_dir = os.path.join(result_dir, slug, "ajax-findings")
+    
+    # for finding in os.listdir(ajax_findings_dir):
+    #     pass
+    # ajax_findings = ajax_findings_data.get("results")
+    
+    # for ajax_finding in ajax_findings:
+    #     extra = ajax_finding.get("extra")
+    #     metavars = extra.get("metavars")
+        
+    
+    ################END RESULTS PARSING##################
+    
     
     
 con.close()

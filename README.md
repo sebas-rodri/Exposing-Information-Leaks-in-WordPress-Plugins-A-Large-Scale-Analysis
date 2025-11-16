@@ -22,9 +22,9 @@ To run ./runscript.sh
 This will create 5 containers per plugin. Which will create a new wordpress instance for each plugin. <br>
 Using some instrumentation of [PHUZZ](https://github.com/gehaxelt/phuzz/blob/main/code/web/instrumentation/overrides.d/07_pathtraversal.php) that was slightly changed, which uses uopz to hook into possible log-file-write sinks (e.g file_put_contents()) and also some other functions, each log-write will be documented. <br>
 Per plugin following dynamic tests are run: <br>
-a. User/Page/Post/Comment creation
-b. All Rest routes found under none standard namespaces, in the Rest API (/wp-json/) will be called with a correct input having the following the specified datatype, and also incorrectly, e.g not following the data type, having very high low numbers when passing integers.
-c. All Ajax-routes will be called using the findings in 1. 
+a. User/Page/Post/Comment creation <br>
+b. All Rest routes found under none standard namespaces, in the Rest API (/wp-json/) will be called with a correct input having the following the specified datatype, and also incorrectly, e.g not following the data type, having very high low numbers when passing integers. <br>
+c. All Ajax-routes will be called using the findings in 1.  <br>
 3. Analysis of the Results of 1. and 2. <br>
 This part contains querys I used on the Information stored in the database. It mainly aims to classify the found logs, and qunatify the existing problem.
 
