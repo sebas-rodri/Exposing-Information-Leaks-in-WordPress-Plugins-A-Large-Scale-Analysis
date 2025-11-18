@@ -21,6 +21,8 @@ WORKDIR /static_analysis
 COPY requirements.txt .
 COPY plugins_sorted.csv .
 COPY semgrep-rules.yml .
+COPY semgrep-ajax-first.yml .
+COPY semgrep-ajax-second.yml .
 COPY python_scripts .
 
 
