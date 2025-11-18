@@ -1,31 +1,85 @@
 rules:
   - id: file-put-contents
-    languages: [php]
+    languages:
+      - php
+    severity: ERROR
     message: Possible file write sink file_put_contents
-    severity: INFO
     patterns:
-      - pattern: file_put_contents(...)
+      - pattern: file_put_contents($FILE, ...)
+      - metavariable-regex:
+          metavariable: $FILE
+          regex: ".*log.*"
+  
+  - id: log-file-var-assignment
+    languages:
+      - php
+    severity: ERROR
+    message: Variable passed to file_put_contents contains 'log'
+    patterns:
+      - pattern: |-
+          $FILE = $EXPR;
+          ...
+          file_put_contents($FILE, ...);
+      - metavariable-pattern:
+          metavariable: $EXPR
+          pattern-regex: .*log.*
 
-  - id: fopen
-    languages: [php]
-    message: Possible file write sink fopen
-    severity: INFO
-    patterns:
-      - pattern: fopen(...)
 
-  - id: fwrite
-    languages: [php]
-    message: Possible file write sink fwrite
-    severity: INFO
+  - id: fopen-var-assignment
+    languages:
+      - php
+    severity: ERROR
+    message: Variable passed to file_put_contents contains 'log'
     patterns:
-      - pattern: fwrite(...)
+      - pattern: |-
+          $FILE = $EXPR;
+          ...
+          fopen($FILE, ...);
+      - metavariable-pattern:
+          metavariable: $EXPR
+          pattern-regex: .*log.*
 
-  - id: fprintf
-    languages: [php]
-    message: Possible file write sink fprintf
-    severity: INFO
+  - id: fwrite-with-fopen
+    languages:
+      - php
+    severity: ERROR
+    message: Variable passed to file_put_contents contains 'log'
     patterns:
-      - pattern: fprintf(...)
+      - pattern: |-
+          $FILE = $EXPR;
+          ...
+          fwrite($FILE, ...);
+      - metavariable-pattern:
+          metavariable: $EXPR
+          pattern-regex: fopen(.*log.*)
+
+  - id: fprintf-with-fopen
+    languages:
+      - php
+    severity: ERROR
+    message: Variable passed to file_put_contents contains 'log'
+    patterns:
+      - pattern: |-
+          $FILE = $EXPR;
+          ...
+          fprintf($FILE, ...);
+      - metavariable-pattern:
+          metavariable: $EXPR
+          pattern-regex: fopen(.*log.*)
+
+  - id: fputs-with-fopen
+    languages:
+      - php
+    severity: ERROR
+    message: Variable passed to file_put_contents contains 'log'
+    patterns:
+      - pattern: |-
+          $FILE = $EXPR;
+          ...
+          fputs($FILE, ...);
+      - metavariable-pattern:
+          metavariable: $EXPR
+          pattern-regex: fopen(.*log.*)
 
   - id: wp-upload-dir
     languages: [php]
@@ -41,14 +95,14 @@ rules:
     patterns:
       - pattern-regex: ".*/wp-content/.*"
   
-  - id: enabeling-WP_DEBUG
+  - id: enabling-WP_DEBUG
     languages: [php]
     message: Plugin enabled WP_DEBUG is assumed to be FALSE in wp-config.php
     severity: WARNING
     patterns:
       - pattern: define( 'WP_DEBUG', true );
   
-  - id: enabelin
+  - id: enabelin-WP_DEBUG_LOG
     languages: [php]
     message: Plugin enabled WP_DEBUG_LOG is assumed to be FALSE in wp-config.php
     severity: WARNING
