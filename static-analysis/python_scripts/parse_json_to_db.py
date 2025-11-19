@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import duckdb
+DB_NAME = os.environ.get("DB_NAME")
 
 if len(sys.argv) != 2:
     print("Usage: python parse_json_to_db.py <path_to_result_directory>")
@@ -13,7 +14,7 @@ if not os.path.exists(result_dir):
     print(f"Error: The directory {result_dir} does not exist.")
     sys.exit(1)
 
-con = duckdb.connect('semgrep_analysis.db')
+con = duckdb.connect(DB_NAME)
 con.execute("PRAGMA threads=4;")
 
 slugs = [dir for dir in os.listdir(result_dir)]

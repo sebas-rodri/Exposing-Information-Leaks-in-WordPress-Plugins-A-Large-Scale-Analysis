@@ -20,8 +20,8 @@ do
     docker volume prune -a -f
     export PLUGIN_SLUG=${slug} 
     docker compose -p wp-${slug} -f docker-compose.yml up --build -d
-    # Wait for WordPress CLI to stop
-    while docker compose -p wp-${slug} -f docker-compose.yml ps --services --filter "status=running" | grep -q wordpress-cli; do
+    # Wait for Runner to stop
+    while docker compose -p wp-${slug} -f docker-compose.yml ps --services --filter "status=running" | grep -q runner; do
         echo "Waiting for seeding to complete..."
         sleep 2
     done

@@ -3,6 +3,7 @@ import time
 import json
 import os
 import datetime
+import duckdb
 from parse_results_to_db import parse_jsonl, save_analysis_metrics
 
 """
@@ -15,6 +16,8 @@ Parsen von JSON am ende und abspeichern in duckdb
 
 AJAX ENDPOINTS called
 """
+DB_NAME = "results.db"
+PLUGIN_SLUG = os.environ.get("PLUGIN_SLUG")
 
 class log:
     def status(response: req.Response, text):
@@ -50,8 +53,126 @@ class RestAPIRunner:
         self.timeout = timeout
 
 class AjaxRunner:
+    BASE = "http://localhost:8080"
+    AJAX = "/wp-admin/admin-ajax.php"
+    LOGIN = f"{BASE}/wp-login.php"
+    admin_name = "admin"
+    admin_pwd =  "secret"
+    user_name = "author@author.de"
+    user_pwd = "author"
+    
     def __init__(self, timeout: int = 120):
         self.timeout = timeout
+        self.con = duckdb.connect(DB_NAME)
+        self.num_ajax_endpoints = 0
+        self.num_ajax_endpoints_called = 0
+        self.endpoints = None
+        self.user_session = self.login(AjaxRunner.user_name, AjaxRunner.user_pwd)
+        self.admin_session = self.login(AjaxRunner.admin_name, AjaxRunner.admin_pwd)
+        self.get_endpoints()
+    
+    def login(name, pwd):
+        session = req.Session()
+        headers1 = { 'Cookie':'wordpress_test_cookie=WP Cookie check' }
+        datas={ 
+        'log':name, 'pwd':pwd, 'wp-submit':'Log In', 
+        'redirect_to': AjaxRunner.BASE, 'testcookie':'1'  
+        }
+        res = session.post(AjaxRunner.LOGIN, headers=headers1, data=datas)
+        return session
+        
+    
+    def get_endpoints(self):
+        self.endpoints = self.con.execute("""
+        SELECT * FROM ajax_routes WHERE plugin_slug = ?
+        """, [PLUGIN_SLUG]).fetchall()
+
+        self.num_ajax_endpoints = len(self.endpoints)
+    
+    def get_arguments_endpoint(self, route_id):
+        arguments = self.con.execute("""
+                                     SELECT method, arg_name
+                                     FROM ajax_route_arguments
+                                     WHERE route_id = ?
+                                     """, [route_id]).fetchall()
+        return arguments
+    
+    def create_data_from_arg(arguments, unexpected=False):
+        for arg in arguments:
+            method = arg[0]
+            arg_name = arg[1]
+            if not unexpected:
+                match method:
+                    case "GET":
+                        yield ("GET", {arg_name: "test"})
+                    case "POST":
+                        yield ("POST", {arg_name: "test"})
+                    case "FILES":
+                        yield ("FILES", {arg_name: ("test.txt", b"Test file content")})
+            else:
+                match method:
+                    case "GET":
+                        yield ("GET", {arg_name: 12323423412234234233123})
+                    case "POST":
+                        yield ("POST", {arg_name: 12323234234234234123123})
+                    case "FILES":
+                        yield ("FILES", {arg_name: 1231232342341243412234})
+
+    def call_endpoints(self):
+       for endpoint in self.endpoints:
+            arguments = self.get_arguments_endpoint(route_id=endpoint[0])
+            action = endpoint[2]
+            priv = endpoint[3]
+            try:
+                if len(arguments) > 0:
+                    for method, data in self.create_data_from_arg(arguments):
+                    
+                        write_data = {"interface": "AJAX", "method": method, "url": AjaxRunner.AJAX, "data": data}
+                        write_test(write_data)
+                        wait_if_change_detected()
+                        if method == "POST":
+                            response = self.user_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
+                            response = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
+                        elif method == "FILES":
+                            response = self.user_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
+                            response = self.admin_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
+                        else:
+                            response = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
+                        log.status(response, f"AJAX Action: {action} with data {data}")
+                    for method, data in self.create_data_from_arg(arguments, unexpected=True):
+                        
+                        write_data = {"interface": "AJAX", "method": method, "url": AjaxRunner.AJAX, "data": data}
+                        write_test(write_data)
+                        wait_if_change_detected()
+                        if method == "POST":
+                            response = self.user_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
+                            response = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
+                        elif method == "FILES":
+                            response = self.user_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
+                            response = self.admin_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
+                        else:
+                            response = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
+                        log.status(response, f"AJAX Action: {action} with unexpected data {data}")
+                    self.num_ajax_endpoints_called += 1
+                else:
+                
+                    write_data = {"interface": "AJAX", "method": "POST", "url": AjaxRunner.AJAX, "data": {"action": action}}
+                    write_test(write_data)
+                    wait_if_change_detected()
+                    response = self.user_session.post(AjaxRunner.AJAX, data={"action": action}, timeout=1)
+                    response = self.admin_session.post(AjaxRunner.AJAX, data={"action": action}, timeout=1)
+                    log.status(response, f"AJAX Action: {action} without data")
+                    self.num_ajax_endpoints_called += 1
+            except req.exceptions.RequestException as e:
+                    log.red(f"Error calling AJAX Action: {action} without data: {e}")
+                    
+           
+    
+    def run(self):
+        self.call_endpoints()
+        self.con.close()
+        
+    
 
 
 def write_test(data):
@@ -73,18 +194,11 @@ TIMEOUT = 2 #Low, Due to high number of requests
 '''
 This part is responsible for AJAX, finding actions, and calling them
 '''
-BASE = "http://localhost:8080"
-AJAX = "/wp-admin/admin-ajax.php"
+
 REST = "/wp-json/"
 STANDARD_NAMESPACES = [
     "wp/v2", "oembed/1.0", "wp-site-health/v1", "wp-block-editor/v1"]
-
-def find_ajax_endpoints() -> list:
-    return []
-
-def call_ajax_endpoint(endpoints: list):
-    for endpoint in endpoints:
-        continue
+BASE = "http://localhost:8080"
 
 def get_relevant_rest_namespaces() -> list:
     wp_json = req.get(BASE + REST).json()
@@ -257,6 +371,14 @@ def find_rest_api_endpoints() -> list:
     test_endpoints(routes)
     return []
 
+def wait_if_change_detected():
+    while True:
+        if os.path.exists(".change"):
+            print("Change detected, sleep 0.05")
+            time.sleep(0.05)
+        else:
+            break
+
 def call_rest_api_endpoints(possible_endpoints):
     #create filewrite on volume, so watcher can know which endpoints were called
     for method, endpoint_configs in possible_endpoints.items():
@@ -267,6 +389,7 @@ def call_rest_api_endpoints(possible_endpoints):
             try:
                 write_data = {"interface": "REST", "method": method, "url": config.get("url"), "data": config.get("data", {})}
                 write_test(write_data)
+                wait_if_change_detected()
                 if method == "GET":
                     response = req.get(url, timeout=30)
                     
@@ -297,10 +420,24 @@ def call_rest_api_endpoints(possible_endpoints):
 
 def main():
     time.sleep(2) #Wait for watcher to be ready
-    ajax_endpoints = find_ajax_endpoints()
+    start = time.time()
+    ajax = AjaxRunner()
+    ajax.run()
     find_rest_api_endpoints()
-    while True:
-        time.sleep(60)
+    end = time.time()
+    total_time_spent = end - start
+    ## Call Save methods
+    parse_jsonl(PLUGIN_SLUG)
+    save_analysis_metrics(PLUGIN_SLUG,
+                          num_unique_rest_endpoints=0, #TODO
+                            num_rest_endpoints_called=0, #TODO
+                            num_rest_endpoints_http_ok=0, #TODO
+                            num_rest_endpoints_http_other=0, #TODO
+                            num_ajax_endpoints=ajax.num_ajax_endpoints,
+                            num_ajac_endpoints_called=ajax.num_ajax_endpoints_called,
+                            time_spend=total_time_spent)
+    print("Dynamic Analysis Finished")
+
 
 def connection_test():
     while True:
@@ -318,8 +455,5 @@ def connection_test():
 if __name__ == "__main__":
     print("Start Runner")
     connection_test()
-    start = time.time()
     main()
-    end = time.time()
-    total_time_spent = end - start
-    ## Call Save methods
+   
