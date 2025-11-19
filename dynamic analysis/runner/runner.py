@@ -3,6 +3,7 @@ import time
 import json
 import os
 import datetime
+from parse_results_to_db import parse_jsonl, save_analysis_metrics
 
 """
 REST endpoints called
@@ -121,6 +122,7 @@ def get_string_for_format(format: str):
     return "test"
 
 def get_default_value_for_type(arg_type: str, format: str = None):
+    #More variation number range, true false, empty array
     match arg_type:
         case "string":
             return get_string_for_format(format) if format else "test"
@@ -316,4 +318,8 @@ def connection_test():
 if __name__ == "__main__":
     print("Start Runner")
     connection_test()
+    start = time.time()
     main()
+    end = time.time()
+    total_time_spent = end - start
+    ## Call Save methods

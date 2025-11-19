@@ -37,6 +37,7 @@ con.sql("""
             num_rest_endpoints_http_other INTEGER GENERATED ALWAYS AS (num_rest_enpoints_called - num_rest_endpoints_http_ok) VIRTUAL,
             num_ajax_endpoints INTEGER NOT NULL,
             num_ajax_endpoints_called INTEGER NOT NULL,
+            time_spend float NOT NULL,
             FOREIGN KEY (plugin_slug) REFERENCES plugins (slug)
             );
             

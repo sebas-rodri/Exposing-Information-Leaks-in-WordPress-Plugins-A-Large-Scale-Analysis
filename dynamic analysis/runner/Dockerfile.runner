@@ -1,7 +1,9 @@
 FROM python:3.14-bookworm
 
+RUN apt-get update && apt-get upgrade -y
 
 COPY runner.py requirements.txt ./
+COPY parse_results_to_db.py ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
