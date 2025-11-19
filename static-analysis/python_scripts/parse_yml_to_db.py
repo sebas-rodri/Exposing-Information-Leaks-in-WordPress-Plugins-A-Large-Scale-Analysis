@@ -28,10 +28,15 @@ con = duckdb.connect(sys.argv[2])
 for rule in rules:
     rule_id = rule.get("id")
     severity = rule.get("severity")
+    sink = rule_id.split("_")
+    if len(sink) != 2:
+        sink = None
+    else:
+        sink = sink[0]
     
     con.sql("""
-            INSERT INTO rules (rule_id, severity) VALUES (?, ?);
-            """,params= (rule_id, severity))
+            INSERT INTO rules (rule_id, severity, sink) VALUES (?, ?, ?);
+            """,params= (rule_id, severity, sink))
 
 
 #test if inserted correctly

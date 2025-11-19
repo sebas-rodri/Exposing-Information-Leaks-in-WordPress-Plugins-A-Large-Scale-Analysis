@@ -10,7 +10,7 @@ rules:
           metavariable: $FILE
           regex: ".*log.*"
   
-  - id: log-file-var-assignment
+  - id: file-put-contents_log-file-var-assignment
     languages:
       - php
     severity: ERROR
@@ -25,7 +25,7 @@ rules:
           pattern-regex: .*log.*
 
 
-  - id: fopen-var-assignment
+  - id: fopen_var-assignment
     languages:
       - php
     severity: ERROR
@@ -39,7 +39,7 @@ rules:
           metavariable: $EXPR
           pattern-regex: .*log.*
 
-  - id: fwrite-with-fopen
+  - id: fwrite_with-fopen
     languages:
       - php
     severity: ERROR
@@ -53,7 +53,7 @@ rules:
           metavariable: $EXPR
           pattern-regex: fopen(.*log.*)
 
-  - id: fprintf-with-fopen
+  - id: fprintf_with-fopen
     languages:
       - php
     severity: ERROR
@@ -67,7 +67,7 @@ rules:
           metavariable: $EXPR
           pattern-regex: fopen(.*log.*)
 
-  - id: fputs-with-fopen
+  - id: fputs_with-fopen
     languages:
       - php
     severity: ERROR
@@ -81,7 +81,7 @@ rules:
           metavariable: $EXPR
           pattern-regex: fopen(.*log.*)
 
-  - id: wp-upload-dir
+  - id: wp-upload-dir_
     languages: [php]
     message: Use of wp_upload_dir (may indicate log or file path handling)
     severity: INFO
@@ -95,14 +95,14 @@ rules:
     patterns:
       - pattern-regex: ".*/wp-content/.*"
   
-  - id: enabling-WP_DEBUG
+  - id: WP-DEBUG_enabling
     languages: [php]
     message: Plugin enabled WP_DEBUG is assumed to be FALSE in wp-config.php
     severity: WARNING
     patterns:
       - pattern: define( 'WP_DEBUG', true );
   
-  - id: enabelin-WP_DEBUG_LOG
+  - id: WP-DEBUG-LOG_enabling
     languages: [php]
     message: Plugin enabled WP_DEBUG_LOG is assumed to be FALSE in wp-config.php
     severity: WARNING

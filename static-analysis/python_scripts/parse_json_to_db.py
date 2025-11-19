@@ -118,10 +118,12 @@ for i, slug in enumerate(slugs):
             elif hook.startswith("wp_ajax_"):
                 priv = True
                 action = hook.replace("wp_ajax_", "", 1)
-            print(action, priv)
-            route_id = con.sql("""
+            try:
+                route_id = con.sql("""
                            SELECT route_id FROM ajax_routes WHERE plugin_slug = ? AND action = ? AND priv = ?
                            """,params=(slug, action, priv)).fetchone()[0]
+            except Exception as e:
+                print(f"Error Selecting route_id, for {slug}, {action}, {priv} this is CRITICAL and should not happen Exception: {e}")
             metavars = ajax_route.get("extra").get("metavars")
             action = metavars.get("$FUNC").get("abstract_content")
             method = metavars.get("$1").get("abstract_content")
