@@ -72,6 +72,9 @@ services:
     network_mode: host
     volumes:
       - shared_runner_watcher:/shared
+      - ./results.db:/results.db
+    environment:
+      PLUGIN_SLUG: ${PLUGIN_SLUG}
 
     
 

@@ -54,7 +54,7 @@ class RestAPIRunner:
 
 class AjaxRunner:
     BASE = "http://localhost:8080"
-    AJAX = "/wp-admin/admin-ajax.php"
+    AJAX = f"{BASE}/wp-admin/admin-ajax.php?"
     LOGIN = f"{BASE}/wp-login.php"
     admin_name = "admin"
     admin_pwd =  "secret"
@@ -71,7 +71,7 @@ class AjaxRunner:
         self.admin_session = self.login(AjaxRunner.admin_name, AjaxRunner.admin_pwd)
         self.get_endpoints()
     
-    def login(name, pwd):
+    def login(self, name, pwd):
         session = req.Session()
         headers1 = { 'Cookie':'wordpress_test_cookie=WP Cookie check' }
         datas={ 
@@ -97,7 +97,7 @@ class AjaxRunner:
                                      """, [route_id]).fetchall()
         return arguments
     
-    def create_data_from_arg(arguments, unexpected=False):
+    def create_data_from_arg(self, arguments, unexpected=False):
         for arg in arguments:
             method = arg[0]
             arg_name = arg[1]
@@ -432,7 +432,6 @@ def main():
                           num_unique_rest_endpoints=0, #TODO
                             num_rest_endpoints_called=0, #TODO
                             num_rest_endpoints_http_ok=0, #TODO
-                            num_rest_endpoints_http_other=0, #TODO
                             num_ajax_endpoints=ajax.num_ajax_endpoints,
                             num_ajac_endpoints_called=ajax.num_ajax_endpoints_called,
                             time_spend=total_time_spent)
@@ -456,4 +455,6 @@ if __name__ == "__main__":
     print("Start Runner")
     connection_test()
     main()
+    while True:
+        time.sleep(10)
    

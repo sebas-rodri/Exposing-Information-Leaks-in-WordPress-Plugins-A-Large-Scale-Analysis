@@ -1,5 +1,5 @@
 rules:
-  - id: file-put-contents
+  - id: file-put-contents_
     languages:
       - php
     severity: ERROR

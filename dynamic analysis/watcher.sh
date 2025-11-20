@@ -21,7 +21,7 @@ do
         interface=$(jq -r .interface /shared/current_test.txt)
         mkdir -p /shared/zip_files/${PLUGIN_SLUG}
         echo "zip_counter = $zip_counter"
-        zip /shared/zip_files/${PLUGIN_SLUG}/${interface}_${zip_counter}.zip $file #Maybe add flag -0 for no compression add feedback touch .change for runner if there is one sleep and check again
+        zip -0 /shared/zip_files/${PLUGIN_SLUG}/${interface}_${zip_counter}.zip $file #Maybe add flag -0 for no compression add feedback touch .change for runner if there is one sleep and check again
         rm .change
     fi
 

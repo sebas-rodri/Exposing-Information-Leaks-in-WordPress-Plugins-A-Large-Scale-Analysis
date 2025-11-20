@@ -1,7 +1,7 @@
 FROM python:3.13
 
 #Set number of plugins to analyse
-ENV NUM_PLUGINS=3 DB_NAME="semgrep_analysis.db"
+ENV NUM_PLUGINS=3 DB_NAME="results.db"
 
 #semgrep & joern installation
 RUN apt-get update && apt-get upgrade -y

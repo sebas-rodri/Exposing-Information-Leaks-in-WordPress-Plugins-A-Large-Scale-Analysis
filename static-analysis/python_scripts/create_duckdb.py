@@ -32,9 +32,9 @@ con.sql("""
         CREATE TABLE IF NOT EXISTS dynamic_analysis(
             plugin_slug VARCHAR NOT NULL PRIMARY KEY,
             num_unique_rest_endpoints INTEGER NOT NULL,
-            num_rest_enpoints_called INTEGER NOT NULL,
+            num_rest_endpoints_called INTEGER NOT NULL,
             num_rest_endpoints_http_ok INTEGER NOT NULL,
-            num_rest_endpoints_http_other INTEGER GENERATED ALWAYS AS (num_rest_enpoints_called - num_rest_endpoints_http_ok) VIRTUAL,
+            num_rest_endpoints_http_other INTEGER GENERATED ALWAYS AS (num_rest_endpoints_called - num_rest_endpoints_http_ok) VIRTUAL,
             num_ajax_endpoints INTEGER NOT NULL,
             num_ajax_endpoints_called INTEGER NOT NULL,
             time_spend float NOT NULL,
