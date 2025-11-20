@@ -24,7 +24,7 @@ do
     j=0
     for file in "./results/$slug/semgrep-rules-ajax/"*; do
         if [ -f "$file" ]; then     
-        semgrep --config=$file --json  --include='*.php' --exclude='*/vendor/*' --exclude='*/tests/*' --output="./results/$slug/ajax-findings/$j.json" ./plugins
+        semgrep --config=$file --json  --include='*.php' --exclude='*/vendor/*' --exclude='*/tests/*' --output="./results/$slug/ajax-findings/$j.json" ./plugins || echo "Semgrep failed for rule $file"
         j=$(( j + 1))
         fi
     done 
