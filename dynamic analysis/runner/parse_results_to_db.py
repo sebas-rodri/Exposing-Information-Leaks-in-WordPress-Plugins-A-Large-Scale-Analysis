@@ -2,7 +2,7 @@ import duckdb
 import os
 import json
 
-DB_NAME = "results.db"
+DB_NAME = "/results.db"
 
 def parse_jsonl(slug):
     try:
@@ -33,14 +33,14 @@ def parse_jsonl(slug):
     except Exception as e:
         print(f"Error parsing /shared/dynamic_test_findings.jsonl findings, Exceptions: {e}")
 
-def save_analysis_metrics(slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_rest_endpoints_http_other, num_ajax_endpoints, num_ajac_endpoints_called, time_spend):
+def save_analysis_metrics(slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, time_spend):
     try:
         con = duckdb.connect(DB_NAME)
         con.sql("""
                 INSERT INTO dynamic_analysis 
-                (plugin_slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_rest_endpoints_http_other, num_ajax_endpoints, num_ajac_endpoints_called, time_spend)
+                (plugin_slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, time_spend)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, params=(slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_rest_endpoints_http_other, num_ajax_endpoints, num_ajac_endpoints_called, time_spend))
+                """, params=(slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, time_spend))
         con.close()
     except Exception as e:
         print(f"Error saving metrics of dynamic Analisys for plugin {slug} Exception: {e}")

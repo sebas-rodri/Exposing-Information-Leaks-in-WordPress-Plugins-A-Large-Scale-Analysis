@@ -433,7 +433,7 @@ def main():
                             num_rest_endpoints_called=0, #TODO
                             num_rest_endpoints_http_ok=0, #TODO
                             num_ajax_endpoints=ajax.num_ajax_endpoints,
-                            num_ajac_endpoints_called=ajax.num_ajax_endpoints_called,
+                            num_ajax_endpoints_called=ajax.num_ajax_endpoints_called,
                             time_spend=total_time_spent)
     print("Dynamic Analysis Finished")
 
