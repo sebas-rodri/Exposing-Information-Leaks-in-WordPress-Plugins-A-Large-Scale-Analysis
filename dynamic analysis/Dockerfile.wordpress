@@ -4,4 +4,5 @@ RUN set -eux; \
     pecl install uopz-7.1.1; \
     docker-php-ext-enable uopz
 
+COPY ./overrides /var/www/overrides/
 COPY custom.ini $PHP_INI_DIR/conf.d/

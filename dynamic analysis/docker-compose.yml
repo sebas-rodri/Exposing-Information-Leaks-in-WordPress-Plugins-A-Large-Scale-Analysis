@@ -30,6 +30,7 @@ services:
       - ./plugins/benchmark-log-plugin:/var/www/html/wp-content/plugins/benchmark-log-plugin:ro
       - ./plugins/test.php:/var/www/html/wp-content/plugins/test.php:ro
       - ./plugins/function-hooking-plugin:/var/www/html/wp-content/plugins/function-hooking-plugin:ro
+      - ./shared-wordpress:/shared
   
   wordpress-cli: #Needed for automatic interaction
     depends_on:

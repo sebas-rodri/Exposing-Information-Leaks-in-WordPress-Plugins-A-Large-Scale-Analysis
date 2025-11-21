@@ -69,7 +69,7 @@ with open(closure_output, 'w') as f:
 #Make Semgrep Rule depending on $NAME
 ajax_route_array = []
 for hook, function_name in ajax_function_names.items():
-    hook = hook.strip("'\"")
+    hook = hook.strip("'\".\'")
     yaml = f"""
 rules:
   - id: {hook}
