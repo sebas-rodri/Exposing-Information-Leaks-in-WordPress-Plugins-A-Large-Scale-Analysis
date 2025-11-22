@@ -37,12 +37,13 @@ con.sql("""
             num_rest_endpoints_http_other INTEGER GENERATED ALWAYS AS (num_rest_endpoints_called - num_rest_endpoints_http_ok) VIRTUAL,
             num_ajax_endpoints INTEGER NOT NULL,
             num_ajax_endpoints_called INTEGER NOT NULL,
+            num_ajax_endpoints_http_ok INTEGER NOT NULL,
             time_spend float NOT NULL,
             FOREIGN KEY (plugin_slug) REFERENCES plugins (slug)
             );
             
         CREATE TABLE IF NOT EXISTS ajax_routes (
-            route_id INTEGER DEFAULT(nextval('ajax_routes_ids')) PRIMARY KEY,
+            route_id INTEGER DEFAULT nextval('ajax_routes_ids') PRIMARY KEY,
             plugin_slug VARCHAR NOT NULL,
             action VARCHAR NOT NULL,
             priv BOOLEAN NOT NULL,
@@ -59,7 +60,7 @@ con.sql("""
         );
             
         CREATE TABLE IF NOT EXISTS semgrep_runs (
-            run_id INTEGER DEFAULT(nextval('run_ids')) PRIMARY KEY,
+            run_id INTEGER DEFAULT nextval('run_ids') PRIMARY KEY,
             plugin_slug VARCHAR NOT NULL,
             error_count INTEGER NOT NULL,
             errors VARCHAR,
@@ -72,7 +73,7 @@ con.sql("""
             sink VARCHAR
         );
         CREATE TABLE IF NOT EXISTS findings_semgrep (
-            finding_id INTEGER DEFAULT(nextval('finding_ids')) PRIMARY KEY,
+            finding_id INTEGER DEFAULT nextval('finding_ids') PRIMARY KEY,
             run_id INTEGER NOT NULL,
             rule_id VARCHAR NOT NULL,
             file_path VARCHAR NOT NULL,
@@ -86,7 +87,7 @@ con.sql("""
             
             
         CREATE TABLE IF NOT EXISTS findings_rest(
-                finding_id INTEGER DEFAULT(nextval('rest_finding_ids')) PRIMARY KEY,
+                finding_id INTEGER DEFAULT nextval('rest_finding_ids') PRIMARY KEY,
                 plugin_slug VARCHAR NOT NULL,
                 url VARCHAR NOT NULL,
                 http_method VARCHAR NOT NULL,
@@ -99,7 +100,7 @@ con.sql("""
             
 
         CREATE TABLE IF NOT EXISTS findings_ajax(
-                finding_id INTEGER DEFAULT(nextval('ajax_findings_ids')) PRIMARY KEY,
+                finding_id INTEGER DEFAULT nextval('ajax_findings_ids') PRIMARY KEY,
                 plugin_slug VARCHAR NOT NULL,
                 url VARCHAR NOT NULL,
                 http_method VARCHAR NOT NULL,
