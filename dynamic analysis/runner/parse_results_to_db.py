@@ -1,7 +1,7 @@
 import duckdb
 import os
 import json
-
+from baseline_paths import BASELINE_PATHS
 DB_NAME = "/results.db"
 
 def parse_jsonl(slug):
@@ -33,14 +33,38 @@ def parse_jsonl(slug):
     except Exception as e:
         print(f"Error parsing /shared/dynamic_test_findings.jsonl findings, Exceptions: {e}")
 
-def save_analysis_metrics(slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, time_spend):
+def save_analysis_metrics(slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, num_ajax_endpoints_http_ok, time_spend):
     try:
         con = duckdb.connect(DB_NAME)
         con.sql("""
                 INSERT INTO dynamic_analysis 
-                (plugin_slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, time_spend)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, params=(slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, time_spend))
+                (plugin_slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, num_ajax_endpoints_http_ok, time_spend)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """, params=(slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, num_ajax_endpoints_http_ok, time_spend))
         con.close()
     except Exception as e:
         print(f"Error saving metrics of dynamic Analisys for plugin {slug} Exception: {e}")
+        
+def save_function_hooking_results(slug):
+    try:
+        con = duckdb.connect(DB_NAME)
+        with open("shared-wordpress/function-hooking.json", "r") as f:
+            json_list = list(f)
+        for jsonl in json_list:
+            finding = json.loads(jsonl)
+            parameters = finding.get("params")
+            if parameters[0] in BASELINE_PATHS:
+                continue #Path was in baseline when runnign with no plugins
+            function = finding.get("function")
+            error = finding.get("error")
+            try:
+                con.sql("""
+                INSERT INTO findings_function_hooks
+                (plugin_slug, function, params, error)
+                VALUES (?, ?, ?, ?)
+                """, params=(slug, function, parameters, error))
+            except Exception as e:
+                print(f"Error inserting into findings_wp_cli {e}")
+        con.close()
+    except Exception as e:
+        print(f"Error saving wp cli results ")

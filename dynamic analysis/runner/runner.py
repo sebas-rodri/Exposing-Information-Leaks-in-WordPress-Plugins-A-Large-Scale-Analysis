@@ -4,7 +4,9 @@ import json
 import os
 import datetime
 import duckdb
-from parse_results_to_db import parse_jsonl, save_analysis_metrics
+import sys
+import string
+from parse_results_to_db import parse_jsonl, save_analysis_metrics, save_function_hooking_results
 
 """
 REST endpoints called
@@ -18,6 +20,11 @@ AJAX ENDPOINTS called
 """
 DB_NAME = "results.db"
 PLUGIN_SLUG = os.environ.get("PLUGIN_SLUG")
+NUM_UNIQUE_REST_ENDPOINTS = 0
+NUM_REST_ENDPOINTS_CALLED = 0
+NUM_REST_ENDPOINTS_HTTP_OK = 0
+TIMEOUT_REST_REQ = 2 #This should be more then enough
+
 
 class log:
     def status(response: req.Response, text):
@@ -66,6 +73,7 @@ class AjaxRunner:
         self.con = duckdb.connect(DB_NAME)
         self.num_ajax_endpoints = 0
         self.num_ajax_endpoints_called = 0
+        self.num_ajax_endpoints_http_ok = 0
         self.endpoints = None
         self.user_session = self.login(AjaxRunner.user_name, AjaxRunner.user_pwd)
         self.admin_session = self.login(AjaxRunner.admin_name, AjaxRunner.admin_pwd)
@@ -86,6 +94,7 @@ class AjaxRunner:
         self.endpoints = self.con.execute("""
         SELECT * FROM ajax_routes WHERE plugin_slug = ?
         """, [PLUGIN_SLUG]).fetchall()
+        
 
         self.num_ajax_endpoints = len(self.endpoints)
     
@@ -97,26 +106,36 @@ class AjaxRunner:
                                      """, [route_id]).fetchall()
         return arguments
     
+
     def create_data_from_arg(self, arguments, unexpected=False):
+        '''
+        5 Test Cases: INT MAX/MIN, all strings, BOOLEAN, argument php
+        '''
+        method_data = []
+        all_args_payload = {}
         for arg in arguments:
             method = arg[0]
             arg_name = arg[1]
-            if not unexpected:
-                match method:
-                    case "GET":
-                        yield ("GET", {arg_name: "test"})
-                    case "POST":
-                        yield ("POST", {arg_name: "test"})
-                    case "FILES":
-                        yield ("FILES", {arg_name: ("test.txt", b"Test file content")})
-            else:
-                match method:
-                    case "GET":
-                        yield ("GET", {arg_name: 12323423412234234233123})
-                    case "POST":
-                        yield ("POST", {arg_name: 12323234234234234123123})
-                    case "FILES":
-                        yield ("FILES", {arg_name: 1231232342341243412234})
+            method_data.append((method, {arg_name: sys.maxsize}))
+            method_data.append((method, {arg_name: -sys.maxsize}))
+            method_data.append((method, {arg_name: string.printable}))
+            method_data.append((method, {arg_name: True}))
+            method_data.append((method, {arg_name: False}))
+            method_data.append((method, {arg_name: 0.0123456789}))
+            method_data.append((method, {f'{arg_name}[]': sys.maxsize}))
+            method_data.append((method, {f'{arg_name}[]': -sys.maxsize}))
+            method_data.append((method, {f'{arg_name}[]': string.printable}))
+            method_data.append((method, {f'{arg_name}[]': True}))
+            method_data.append((method, {f'{arg_name}[]': False}))
+            method_data.append((method, {f'{arg_name}[]': 0.0123456789}))
+            all_args_payload[arg_name] = string.printable
+        
+        method_data.append(("POST", all_args_payload))
+        method_data.append(("GET", all_args_payload))
+        
+        return method_data
+        
+        
 
     def call_endpoints(self):
        for endpoint in self.endpoints:
@@ -132,13 +151,15 @@ class AjaxRunner:
                         wait_if_change_detected()
                         if method == "POST":
                             response = self.user_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
-                            response = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
+                            response_admin = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
                         elif method == "FILES":
                             response = self.user_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
-                            response = self.admin_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
+                            response_admin = self.admin_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
                         else:
                             response = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
+                            response_admin = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
                         log.status(response, f"AJAX Action: {action} with data {data}")
+                        log.status(response_admin, f"AJAX Action: {action} with data {data}")
                     for method, data in self.create_data_from_arg(arguments, unexpected=True):
                         
                         write_data = {"interface": "AJAX", "method": method, "url": AjaxRunner.AJAX, "data": data}
@@ -146,22 +167,25 @@ class AjaxRunner:
                         wait_if_change_detected()
                         if method == "POST":
                             response = self.user_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
-                            response = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
+                            response_admin = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
                         elif method == "FILES":
                             response = self.user_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
-                            response = self.admin_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
+                            response_admin = self.admin_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
                         else:
                             response = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
+                            response_admin = self.admin_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
                         log.status(response, f"AJAX Action: {action} with unexpected data {data}")
+                        log.status(response_admin, f"AJAX Action: {action} with unexpected data {data}")
                     self.num_ajax_endpoints_called += 1
                 else:
-                
+                    #No arguments in AJAX action
                     write_data = {"interface": "AJAX", "method": "POST", "url": AjaxRunner.AJAX, "data": {"action": action}}
                     write_test(write_data)
                     wait_if_change_detected()
                     response = self.user_session.post(AjaxRunner.AJAX, data={"action": action}, timeout=1)
-                    response = self.admin_session.post(AjaxRunner.AJAX, data={"action": action}, timeout=1)
+                    response_admin = self.admin_session.post(AjaxRunner.AJAX, data={"action": action}, timeout=1)
                     log.status(response, f"AJAX Action: {action} without data")
+                    log.status(response_admin, f"AJAX Action: {action} without data")
                     self.num_ajax_endpoints_called += 1
             except req.exceptions.RequestException as e:
                     log.red(f"Error calling AJAX Action: {action} without data: {e}")
@@ -239,38 +263,38 @@ def get_default_value_for_type(arg_type: str, format: str = None):
     #More variation number range, true false, empty array
     match arg_type:
         case "string":
-            return get_string_for_format(format) if format else "test"
+            return get_string_for_format(format) if format else string.printable
         case "null":
             return None
         case "boolean":
             return True
         case "integer":
-            return 1
+            return sys.maxsize
         case "number":
-            return 1.0
+            return 1.23456789
         case "array":
-            return ["test"]
+            return [string.printable, 123, True, None]
         case "object":
-            return {"key": "value"}
-    return "test"
+            return {string.printable: string.printable}
+    return string.printable
 
 def get_wrong_value_for_type(arg_type: str):
     match arg_type:
         case "string":
-            return 123
+            return sys.maxsize
         case "null":
-            return "not_null"
+            return sys.maxsize
         case "boolean":
-            return "not_boolean"
+            return sys.maxsize
         case "integer":
-            return "not_integer"
+            return string.printable
         case "number":
-            return "not_number"
+            return string.printable
         case "array":
-            return "not_array"
+            return string.printable
         case "object":
-            return "not_object"
-    return ""
+            return string.printable
+    return string.printable
 
 def create_possible_routes(base_url: str, details: dict) -> dict:
     endpoints = details.get("endpoints", [])
@@ -354,7 +378,7 @@ def create_possible_routes(base_url: str, details: dict) -> dict:
                 #No data
                 possible_routes[method].append({"url": base_url, "data": {}})
                     
-                
+    NUM_UNIQUE_REST_ENDPOINTS = len(possible_routes.values())         
     return possible_routes
 
 def test_endpoints(routes: dict):
@@ -390,28 +414,31 @@ def call_rest_api_endpoints(possible_endpoints):
                 write_data = {"interface": "REST", "method": method, "url": config.get("url"), "data": config.get("data", {})}
                 write_test(write_data)
                 wait_if_change_detected()
+                NUM_REST_ENDPOINTS_CALLED += 1
                 if method == "GET":
-                    response = req.get(url, timeout=30)
+                    response = req.get(url, timeout=TIMEOUT_REST_REQ)
                     
                 elif method == "POST":
                     data = config.get("data", {})
                     # Try both JSON and form data
-                    response = req.post(url, json=data, timeout=30)
+                    response = req.post(url, json=data, timeout=TIMEOUT_REST_REQ)
                     log.status(response, f"{url} (JSON: {data})")
                     if data:
-                        response = req.post(url, data=data, timeout=30)
+                        response = req.post(url, data=data, timeout=TIMEOUT_REST_REQ)
                         log.status(response, f"{url} (Form: {data})")
                     
                 elif method == "PUT":
                     data = config.get("data", {})
-                    response = req.put(url, json=data, timeout=30)
+                    response = req.put(url, json=data, timeout=TIMEOUT_REST_REQ)
                     
                 elif method == "DELETE":
-                    response = req.delete(url, timeout=30)
+                    response = req.delete(url, timeout=TIMEOUT_REST_REQ)
                     
                 elif method == "PATCH":
                     data = config.get("data", {})
-                    response = req.patch(url, json=data, timeout=30)
+                    response = req.patch(url, json=data, timeout=TIMEOUT_REST_REQ)
+                if response.ok:
+                    NUM_REST_ENDPOINTS_HTTP_OK += 1
                 log.status(response, url) 
             except req.exceptions.RequestException as e:
                 log.red(f"Error calling {method} {url}: {e}")
@@ -429,12 +456,14 @@ def main():
     ## Call Save methods
     parse_jsonl(PLUGIN_SLUG)
     save_analysis_metrics(PLUGIN_SLUG,
-                          num_unique_rest_endpoints=0, #TODO
-                            num_rest_endpoints_called=0, #TODO
-                            num_rest_endpoints_http_ok=0, #TODO
+                          num_unique_rest_endpoints=NUM_UNIQUE_REST_ENDPOINTS, 
+                            num_rest_endpoints_called=NUM_REST_ENDPOINTS_CALLED,
+                            num_rest_endpoints_http_ok=NUM_REST_ENDPOINTS_HTTP_OK, 
                             num_ajax_endpoints=ajax.num_ajax_endpoints,
                             num_ajax_endpoints_called=ajax.num_ajax_endpoints_called,
+                            num_ajax_endpoints_http_ok=ajax.num_ajax_endpoints_http_ok,
                             time_spend=total_time_spent)
+    save_function_hooking_results(slug=PLUGIN_SLUG)
     print("Dynamic Analysis Finished")
 
 
@@ -455,6 +484,7 @@ if __name__ == "__main__":
     print("Start Runner")
     connection_test()
     main()
+    #TODO: Change when production
     while True:
         time.sleep(10)
    

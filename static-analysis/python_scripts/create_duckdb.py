@@ -111,6 +111,15 @@ con.sql("""
                 FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (plugin_slug)
             );
         
+        CREATE TABLE IF NOT EXISTS findings_function_hooks(
+                finding_id INTEGER DEFAULT nextval('cli_findings_id') PRIMARY KEY,
+                plugin_slug VARCHAR NOT NULL,
+                function VARCHAR NOT NULL,
+                params VARCHAR NOT NULL, --this is mostly the file in question
+                error VARCHAR,
+                FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (plugin_slug)
+            );
+        
         """)
 
 con.close()
