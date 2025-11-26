@@ -129,9 +129,14 @@ for i, slug in enumerate(slugs):
             except Exception as e:
                 print(f"Error Selecting route_id, for {slug}, {action}, {priv} this is CRITICAL and should not happen Exception: {e}")
             metavars = ajax_route.get("extra").get("metavars")
-            action = metavars.get("$FUNC").get("abstract_content")
-            method = metavars.get("$1").get("abstract_content")
-            arg = metavars.get("$ARG").get("abstract_content")
+            
+            try:
+                action = metavars.get("$FUNC").get("abstract_content")
+                method = metavars.get("$1").get("abstract_content")
+                arg = metavars.get("$ARG").get("abstract_content")
+            except Exception as e:
+                print(f"CRITICAL Error getting metavars for ajax finding for plugin {slug}, hook {hook}, Exception: {e}")
+                continue
             
             try:
                 con.sql("""
