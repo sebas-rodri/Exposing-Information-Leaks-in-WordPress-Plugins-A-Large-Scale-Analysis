@@ -82,9 +82,12 @@ for i, slug in enumerate(slugs):
         args = ajax_route.get("args")
         route_id = result[0]
         for method_arg in args:
-            con.sql("""
+            try:
+                con.sql("""
                     INSERT INTO ajax_route_arguments (route_id, method, arg_name) VALUES (?,?,?)
                     """, params=(route_id, method_arg[0], method_arg[1]))
+            except Exception as e:
+                print(f"Problem with ajay arg {e}")
             
     
         
