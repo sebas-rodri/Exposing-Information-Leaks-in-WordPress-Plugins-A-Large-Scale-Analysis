@@ -138,7 +138,7 @@ class AjaxRunner:
         
 
     def call_endpoints(self):
-       for endpoint in self.endpoints:
+        for endpoint in self.endpoints:
             arguments = self.get_arguments_endpoint(route_id=endpoint[0])
             action = endpoint[2]
             priv = endpoint[3]
@@ -147,8 +147,9 @@ class AjaxRunner:
                     for method, data in self.create_data_from_arg(arguments):
                     
                         write_data = {"interface": "AJAX", "method": method, "url": AjaxRunner.AJAX, "data": data}
-                        write_test(write_data)
                         wait_if_change_detected()
+                        delete_test_file()
+                        write_test(write_data)
                         if method == "POST":
                             response = self.user_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
                             response_admin = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
@@ -160,22 +161,7 @@ class AjaxRunner:
                             response_admin = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
                         log.status(response, f"AJAX Action: {action} with data {data}")
                         log.status(response_admin, f"AJAX Action: {action} with data {data}")
-                    for method, data in self.create_data_from_arg(arguments, unexpected=True):
-                        
-                        write_data = {"interface": "AJAX", "method": method, "url": AjaxRunner.AJAX, "data": data}
-                        write_test(write_data)
-                        wait_if_change_detected()
-                        if method == "POST":
-                            response = self.user_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
-                            response_admin = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
-                        elif method == "FILES":
-                            response = self.user_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
-                            response_admin = self.admin_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
-                        else:
-                            response = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
-                            response_admin = self.admin_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
-                        log.status(response, f"AJAX Action: {action} with unexpected data {data}")
-                        log.status(response_admin, f"AJAX Action: {action} with unexpected data {data}")
+                    
                     self.num_ajax_endpoints_called += 1
                 else:
                     #No arguments in AJAX action
@@ -187,8 +173,11 @@ class AjaxRunner:
                     log.status(response, f"AJAX Action: {action} without data")
                     log.status(response_admin, f"AJAX Action: {action} without data")
                     self.num_ajax_endpoints_called += 1
+            
             except req.exceptions.RequestException as e:
                     log.red(f"Error calling AJAX Action: {action} without data: {e}")
+        wait_if_change_detected()
+        delete_test_file()
                     
            
     
@@ -209,9 +198,13 @@ def write_test(data):
         
     with open(FILE_PATH, "+w") as f:
         f.write(json.dumps(data))
+
+def delete_test_file():
+    if os.path.exists(FILE_PATH):
+        os.remove(FILE_PATH)
     
 
-FILE_PATH = "shared/current_test.txt"
+FILE_PATH = "/shared/current_test/current_test.txt"
 TIMEOUT = 2 #Low, Due to high number of requests
         
 
@@ -377,7 +370,8 @@ def create_possible_routes(base_url: str, details: dict) -> dict:
                 
                 #No data
                 possible_routes[method].append({"url": base_url, "data": {}})
-                    
+    
+    global NUM_UNIQUE_REST_ENDPOINTS
     NUM_UNIQUE_REST_ENDPOINTS = len(possible_routes.values())         
     return possible_routes
 
@@ -404,6 +398,8 @@ def wait_if_change_detected():
             break
 
 def call_rest_api_endpoints(possible_endpoints):
+    global NUM_REST_ENDPOINTS_CALLED
+    global NUM_REST_ENDPOINTS_HTTP_OK
     #create filewrite on volume, so watcher can know which endpoints were called
     for method, endpoint_configs in possible_endpoints.items():
         for config in endpoint_configs:
@@ -446,7 +442,10 @@ def call_rest_api_endpoints(possible_endpoints):
     
 
 def main():
-    time.sleep(2) #Wait for watcher to be ready
+    global PLUGIN_SLUG
+    global NUM_UNIQUE_REST_ENDPOINTS
+    global NUM_REST_ENDPOINTS_CALLED
+    global NUM_REST_ENDPOINTS_HTTP_OK
     start = time.time()
     ajax = AjaxRunner()
     ajax.run()
@@ -454,7 +453,6 @@ def main():
     end = time.time()
     total_time_spent = end - start
     ## Call Save methods
-    parse_jsonl(PLUGIN_SLUG)
     save_analysis_metrics(PLUGIN_SLUG,
                           num_unique_rest_endpoints=NUM_UNIQUE_REST_ENDPOINTS, 
                             num_rest_endpoints_called=NUM_REST_ENDPOINTS_CALLED,
@@ -463,6 +461,7 @@ def main():
                             num_ajax_endpoints_called=ajax.num_ajax_endpoints_called,
                             num_ajax_endpoints_http_ok=ajax.num_ajax_endpoints_http_ok,
                             time_spend=total_time_spent)
+    parse_jsonl(PLUGIN_SLUG)
     save_function_hooking_results(slug=PLUGIN_SLUG)
     print("Dynamic Analysis Finished")
 
@@ -485,6 +484,4 @@ if __name__ == "__main__":
     connection_test()
     main()
     #TODO: Change when production
-    while True:
-        time.sleep(10)
    

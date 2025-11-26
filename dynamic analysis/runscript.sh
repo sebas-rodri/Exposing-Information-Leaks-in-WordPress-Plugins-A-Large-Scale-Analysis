@@ -13,19 +13,23 @@ docker volume prune -a -f
 echo "Analyzing $NUM_PLUGINS plugins"
 for i in `seq 0 $(($NUM_PLUGINS-1))`
 do
+    if [ -f "./shared_runner_watcher/dynamic_test_findings.jsonl" ]; then
+        rm ./shared_runner_watcher/dynamic_test_findings.jsonl
+    fi
     echo "Analyzing plugin number $i"
     python3 ../static-analysis/python_scripts/download-unzip-and-infocreation.py plugins_sorted.csv $i
     slug=$(python3 ../static-analysis/python_scripts/get_slug.py plugins_sorted.csv $i)
     echo "Analysing plugin: ${slug}"
     docker volume prune -a -f
     export PLUGIN_SLUG=${slug} 
-    docker compose -p wp-${slug} -f docker-compose.yml up --build -d
+    PLUGIN_SLUG=${slug} docker compose -p wp-${slug} -f docker-compose.yml up --build -d
     # Wait for Runner to stop
     while docker compose -p wp-${slug} -f docker-compose.yml ps --services --filter "status=running" | grep -q runner; do
         echo "Waiting for seeding to complete..."
         sleep 2
     done
     rm -rf plugins
+    rm -rf shared-wordpress
     docker compose -p wp-${slug} down
     docker network prune -f 
     sleep 1

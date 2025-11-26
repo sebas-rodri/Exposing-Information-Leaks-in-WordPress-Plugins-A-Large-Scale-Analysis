@@ -36,6 +36,7 @@ services:
     depends_on:
       - db
       - wordpress
+      - watcher
     image: wordpress:cli
     user: '33' # For permissions
     command: ['sh', '/seed-script.sh']
@@ -46,6 +47,7 @@ services:
     - ./plugins/test.php:/var/www/html/wp-content/plugins/test.php:ro
     - ./plugins/function-hooking-plugin:/var/www/html/wp-content/plugins/function-hooking-plugin:ro
     - ./seed-script.sh:/seed-script.sh:ro
+    - ./shared_runner_watcher:/shared
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: exampleuser
@@ -57,23 +59,31 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.watcher
+    depends_on:
+      - wordpress
+      - db
     volumes:
       - wordpress:/var/www/html:ro
-      - shared_runner_watcher:/shared
+      - ./shared_runner_watcher:/shared
     environment:
       PLUGIN_SLUG: ${PLUGIN_SLUG}
   
   runner:
     depends_on:
-      - watcher
-      - wordpress
+      watcher:
+        condition: service_started
+      wordpress:
+        condition: service_started
+      wordpress-cli:
+        condition: service_completed_successfully
     build:
       context: runner
       dockerfile: Dockerfile.runner
     network_mode: host
     volumes:
-      - shared_runner_watcher:/shared
+      - ./shared_runner_watcher:/shared
       - ./results.db:/results.db
+      - ./shared-wordpress:/shared-wordpress:ro
     environment:
       PLUGIN_SLUG: ${PLUGIN_SLUG}
 

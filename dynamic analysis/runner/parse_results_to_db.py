@@ -13,7 +13,9 @@ def parse_jsonl(slug):
             finding = json.loads(finding)
             interface = finding.get("interface")
             method = finding.get("method")
-            url = finding.get("url").strip("http://localhost:8080")
+            url = finding.get("url") # In case of WP-CLI this is the command
+            if interface != "WP_CLI":
+                url = finding.get("url").strip("http://localhost:8080")
             data = finding.get("data")
             name_of_changed_file = finding.get("name_of_changed_file")
             type_of_operation = finding.get("type_of_operation")
@@ -23,11 +25,17 @@ def parse_jsonl(slug):
                         INSERT INTO findings_rest (plugin_slug, url, http_method, data, name_of_changed_file, type_of_operation, zip_file_number)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                         """, params= (slug, url, method, data, name_of_changed_file, type_of_operation, zip_counter))
-            else: #AJAX
+            elif interface == "AJAX":
                 con.sql("""
                         INSERT INTO findings_ajax (plugin_slug, url, http_method, data, name_of_changed_file, type_of_operation, zip_file_number)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                         """, params= (slug, url, method, data, name_of_changed_file, type_of_operation, zip_counter))
+            elif interface == "WP_CLI":
+                con.sql("""
+                        INSERT INTO findings_wp_cli (plugin_slug, command, name_of_changed_file, type_of_operation, zip_file_number)
+                        VALUES (?, ?, ?, ?, ?)
+                        """, params= (slug, url, name_of_changed_file, type_of_operation, zip_counter))
+                
         con.close()
             
     except Exception as e:
