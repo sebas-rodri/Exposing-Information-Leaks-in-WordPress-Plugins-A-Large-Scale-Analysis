@@ -4,6 +4,7 @@ RUN apt-get update && apt-get upgrade -y
 
 COPY runner.py requirements.txt ./
 COPY parse_results_to_db.py ./
+COPY baseline_paths.py ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
