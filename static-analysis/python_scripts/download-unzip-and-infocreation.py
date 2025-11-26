@@ -59,7 +59,7 @@ try:
             #unzip the file
             try:
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                    extract_path = os.path.join(DOWNLOAD_DIR, slug)
+                    extract_path = os.path.join(DOWNLOAD_DIR)
                     zip_ref.extractall(extract_path)
                     print(f"Extracted {zip_path} to {extract_path}")
             except Exception as e:

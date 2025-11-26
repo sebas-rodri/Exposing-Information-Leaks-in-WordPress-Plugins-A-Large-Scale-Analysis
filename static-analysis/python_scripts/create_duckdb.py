@@ -15,6 +15,8 @@ con.sql("""
         CREATE SEQUENCE IF NOT EXISTS rest_finding_ids START 1;
         CREATE SEQUENCE IF NOT EXISTS ajax_findings_ids START 1;
         CREATE SEQUENCE IF NOT EXISTS ajax_routes_ids START 1;
+        CREATE SEQUENCE IF NOT EXISTS cli_findings_id START 1;
+        CREATE SEQUENCE IF NOT EXISTS hooks_id START 1;
         """)
 
 #Create Tables
@@ -93,7 +95,7 @@ con.sql("""
                 http_method VARCHAR NOT NULL,
                 data VARCHAR,
                 name_of_changed_file VARCHAR,
-                type_of_operation VARCHAR CHECK(type_of_operation IN ['create', 'modify', 'delete', 'move']),
+                type_of_operation VARCHAR,
                 zip_file_number INTEGER NOT NULL,
                 FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (plugin_slug)
             );
@@ -106,13 +108,22 @@ con.sql("""
                 http_method VARCHAR NOT NULL,
                 data VARCHAR,
                 name_of_changed_file VARCHAR,
-                type_of_operation VARCHAR CHECK(type_of_operation IN ['create', 'modify', 'delete', 'move']),
+                type_of_operation VARCHAR,
                 zip_file_number INTEGER NOT NULL,
                 FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (plugin_slug)
             );
         
-        CREATE TABLE IF NOT EXISTS findings_function_hooks(
+        CREATE TABLE IF NOT EXISTS findings_wp_cli(
                 finding_id INTEGER DEFAULT nextval('cli_findings_id') PRIMARY KEY,
+                plugin_slug VARCHAR NOT NULL,
+                command VARCHAR NOT NULL,
+                name_of_changed_file VARCHAR,
+                type_of_operation VARCHAR NOT NULL,
+                zip_file_number INTEGER NOT NULL,
+                FOREIGN KEY (plugin_slug) REFERENCES dynamic_analysis (plugin_slug)
+            );
+        CREATE TABLE IF NOT EXISTS findings_function_hooks(
+                finding_id INTEGER DEFAULT nextval('hooks_id') PRIMARY KEY,
                 plugin_slug VARCHAR NOT NULL,
                 function VARCHAR NOT NULL,
                 params VARCHAR NOT NULL, --this is mostly the file in question
