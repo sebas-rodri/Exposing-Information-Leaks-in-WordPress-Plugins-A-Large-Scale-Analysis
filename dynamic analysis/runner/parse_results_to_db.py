@@ -75,4 +75,4 @@ def save_function_hooking_results(slug):
                 print(f"Error inserting into findings_wp_cli {e}")
         con.close()
     except Exception as e:
-        print(f"Error saving wp cli results ")
+        print(f"Error saving function-hooking.json {e}")

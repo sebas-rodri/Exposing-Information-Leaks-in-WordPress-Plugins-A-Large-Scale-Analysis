@@ -28,8 +28,16 @@ do
         echo "Waiting for seeding to complete..."
         sleep 2
     done
+    echo "\n ________________________________\n${slug}\n" >> ./logs/cli-container.log
+    docker logs wp-${slug}-wordpress-cli-1 >> ./logs/cli-container.log
+    echo "\n ________________________________\n${slug}\n" >> ./logs/watcher-container.log
+    docker logs wp-${slug}-watcher-1 >> ./logs/watcher-container.log
+    echo "\n ________________________________\n${slug}\n" >> ./logs/runner-container.log
+    docker logs wp-${slug}-runner-1 >> ./logs/runner-container.log
+
     rm -rf plugins
     rm -rf shared-wordpress
+    rm -rf results
     docker compose -p wp-${slug} down
     docker network prune -f 
     sleep 1
