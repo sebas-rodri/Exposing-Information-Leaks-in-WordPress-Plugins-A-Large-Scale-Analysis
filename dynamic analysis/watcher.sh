@@ -1,5 +1,6 @@
 #!/bin/bash
 zip_counter=0 #used for referencing later
+chmod -R 777 /shared #This is needed bcs it makes problems with bind mount
 #https://stackoverflow.com/questions/8699293/how-to-monitor-a-complete-directory-tree-for-changes-in-linux
 inotifywait -m -r -e close_write,delete,move /var/www/html/wp-content /shared/current_test/ --format '%w%f %e %T' --timefmt '%Y-%m-%d %H:%M:%S' | while read file event time
 do

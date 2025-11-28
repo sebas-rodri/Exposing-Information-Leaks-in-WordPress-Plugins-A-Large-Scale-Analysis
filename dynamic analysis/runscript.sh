@@ -25,7 +25,7 @@ do
     PLUGIN_SLUG=${slug} docker compose -p wp-${slug} -f docker-compose.yml up --build -d
     # Wait for Runner to stop
     while docker compose -p wp-${slug} -f docker-compose.yml ps --services --filter "status=running" | grep -q runner; do
-        echo "Waiting for seeding to complete..."
+        echo "Waiting for wp-${slug}-runner-1 container to complete..."
         sleep 2
     done
     echo "\n ________________________________\n${slug}\n" >> ./logs/cli-container.log

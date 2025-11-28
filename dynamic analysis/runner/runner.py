@@ -162,7 +162,9 @@ class AjaxRunner:
                         log.status(response, f"AJAX Action: {action} with data {data}")
                         log.status(response_admin, f"AJAX Action: {action} with data {data}")
                     
-                    self.num_ajax_endpoints_called += 1
+                        self.num_ajax_endpoints_called += 2 #user + admin
+                        self.num_ajax_endpoints_http_ok += (1 if response.status_code == 200 else 0)
+                        self.num_ajax_endpoints_http_ok += (1 if response_admin.status_code == 200 else 0)
                 else:
                     #No arguments in AJAX action
                     write_data = {"interface": "AJAX", "method": "POST", "url": AjaxRunner.AJAX, "data": {"action": action}}
@@ -172,7 +174,9 @@ class AjaxRunner:
                     response_admin = self.admin_session.post(AjaxRunner.AJAX, data={"action": action}, timeout=1)
                     log.status(response, f"AJAX Action: {action} without data")
                     log.status(response_admin, f"AJAX Action: {action} without data")
-                    self.num_ajax_endpoints_called += 1
+                    self.num_ajax_endpoints_called += 2 #user + admin
+                    self.num_ajax_endpoints_http_ok += (1 if response.status_code == 200 else 0)
+                    self.num_ajax_endpoints_http_ok += (1 if response_admin.status_code == 200 else 0)
             
             except req.exceptions.RequestException as e:
                     log.red(f"Error calling AJAX Action: {action} without data: {e}")
