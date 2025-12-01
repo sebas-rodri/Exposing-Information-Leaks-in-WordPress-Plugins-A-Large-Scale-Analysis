@@ -6,6 +6,7 @@ import datetime
 import duckdb
 import sys
 import string
+from timeout_function_decorator import timeout
 from parse_results_to_db import parse_jsonl, save_analysis_metrics, save_function_hooking_results
 
 """
@@ -24,6 +25,7 @@ NUM_UNIQUE_REST_ENDPOINTS = 0
 NUM_REST_ENDPOINTS_CALLED = 0
 NUM_REST_ENDPOINTS_HTTP_OK = 0
 TIMEOUT_REST_REQ = 2 #This should be more then enough
+TIMEOUT_CONNECTION = 60
 
 
 class log:
@@ -469,7 +471,7 @@ def main():
     save_function_hooking_results(slug=PLUGIN_SLUG)
     print("Dynamic Analysis Finished")
 
-
+@timeout(TIMEOUT_CONNECTION)
 def connection_test():
     while True:
         try:
@@ -487,5 +489,4 @@ if __name__ == "__main__":
     print("Start Runner")
     connection_test()
     main()
-    #TODO: Change when production
    

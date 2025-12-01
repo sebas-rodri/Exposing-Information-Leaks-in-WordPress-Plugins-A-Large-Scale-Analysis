@@ -65,6 +65,7 @@ services:
     volumes:
       - wordpress:/var/www/html:ro
       - ./shared_runner_watcher:/shared
+      - ./shared-wordpress:/shared-wordpress
     environment:
       PLUGIN_SLUG: ${PLUGIN_SLUG}
   
@@ -94,6 +95,7 @@ volumes:
   wordpress:
   db:
   shared_runner_watcher:
+  shared-wordpress:
 
 
   #Freshly seeded MariaDB/MySQL
