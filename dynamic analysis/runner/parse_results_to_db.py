@@ -6,6 +6,7 @@ DB_NAME = "/results.db"
 
 def parse_jsonl(slug):
     try:
+        print("Saving dynamix test findings")
         con = duckdb.connect(DB_NAME)
         with open("/shared/dynamic_test_findings.jsonl", "r") as file:
             json_list = list(file)
@@ -35,7 +36,7 @@ def parse_jsonl(slug):
                         INSERT INTO findings_wp_cli (plugin_slug, command, name_of_changed_file, type_of_operation, zip_file_number)
                         VALUES (?, ?, ?, ?, ?)
                         """, params= (slug, url, name_of_changed_file, type_of_operation, zip_counter))
-                
+        print("Done saving dynamic Test Findings")
         con.close()
             
     except Exception as e:
@@ -43,6 +44,7 @@ def parse_jsonl(slug):
 
 def save_analysis_metrics(slug, num_unique_rest_endpoints, num_rest_endpoints_called, num_rest_endpoints_http_ok, num_ajax_endpoints, num_ajax_endpoints_called, num_ajax_endpoints_http_ok, time_spend):
     try:
+        print("saving metrics")
         con = duckdb.connect(DB_NAME)
         con.sql("""
                 INSERT INTO dynamic_analysis 
@@ -55,8 +57,9 @@ def save_analysis_metrics(slug, num_unique_rest_endpoints, num_rest_endpoints_ca
         
 def save_function_hooking_results(slug):
     try:
+        print("Saving function-hooking.json")
         con = duckdb.connect(DB_NAME)
-        with open("shared-wordpress/function-hooking.json", "r") as f:
+        with open("/shared-wordpress/function-hooking.json", "r") as f:
             json_list = list(f)
         for jsonl in json_list:
             finding = json.loads(jsonl)
@@ -73,6 +76,7 @@ def save_function_hooking_results(slug):
                 """, params=(slug, function, parameters, error))
             except Exception as e:
                 print(f"Error inserting into findings_wp_cli {e}")
+        print("Done saving function-hooking.json")
         con.close()
     except Exception as e:
         print(f"Error saving function-hooking.json {e}")
