@@ -1,0 +1,7 @@
+Some commands I use to approximate the errors encountered
+
+To view how run went:
+cat runner-container.log | grep -A 5 -B 5 "Dynamic Analysis Finished"
+
+count how many Containers finished run properly:
+cat runner-container.log | grep "Dynamic Analysis Finished" | wc -l

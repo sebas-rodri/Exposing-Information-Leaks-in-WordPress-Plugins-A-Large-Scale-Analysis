@@ -28,7 +28,7 @@ function setup_minimal_hooks()
         echo 'uopz not loaded';
         return;
     }
-    //TODO: Add all relevant sinks with real information
+    //TODO: Add all relevant sinks with better information
 
     $log_file = WP_CONTENT_DIR . '/function-hooks.log';
 
@@ -51,6 +51,12 @@ function setup_minimal_hooks()
         ];
         file_put_contents($log_file, json_encode($log_entry) . "\n", FILE_APPEND | LOCK_EX);
     });
+
+    //Hook fwrite
+
+    //Hook fopen maybe
+
+    //Hook fprintf
 }
 
 // Initialize hooks when plugins are loaded

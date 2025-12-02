@@ -147,26 +147,28 @@ class AjaxRunner:
             try:
                 if len(arguments) > 0:
                     for method, data in self.create_data_from_arg(arguments):
-                    
-                        write_data = {"interface": "AJAX", "method": method, "url": AjaxRunner.AJAX, "data": data}
-                        wait_if_change_detected()
-                        delete_test_file()
-                        write_test(write_data)
-                        if method == "POST":
-                            response = self.user_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
-                            response_admin = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
-                        elif method == "FILES":
-                            response = self.user_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
-                            response_admin = self.admin_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
-                        else:
-                            response = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
-                            response_admin = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
-                        log.status(response, f"AJAX Action: {action} with data {data}")
-                        log.status(response_admin, f"AJAX Action: {action} with data {data}")
-                    
-                        self.num_ajax_endpoints_called += 2 #user + admin
-                        self.num_ajax_endpoints_http_ok += (1 if response.status_code == 200 else 0)
-                        self.num_ajax_endpoints_http_ok += (1 if response_admin.status_code == 200 else 0)
+                        try:
+                            write_data = {"interface": "AJAX", "method": method, "url": AjaxRunner.AJAX, "data": data}
+                            wait_if_change_detected()
+                            delete_test_file()
+                            write_test(write_data)
+                            if method == "POST":
+                                response = self.user_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
+                                response_admin = self.admin_session.post(AjaxRunner.AJAX, data={"action": action, **data}, timeout=1)
+                            elif method == "FILES":
+                                response = self.user_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
+                                response_admin = self.admin_session.post(AjaxRunner.AJAX, files={"action": action, **data}, timeout=1)
+                            else:
+                                response = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
+                                response_admin = self.user_session.get(AjaxRunner.AJAX, params={"action": action, **data}, timeout=1)
+                            log.status(response, f"AJAX Action: {action} with data {data}")
+                            log.status(response_admin, f"AJAX Action: {action} with data {data}")
+
+                            self.num_ajax_endpoints_called += 2 #user + admin
+                            self.num_ajax_endpoints_http_ok += (1 if response.status_code == 200 else 0)
+                            self.num_ajax_endpoints_http_ok += (1 if response_admin.status_code == 200 else 0)
+                        except Exception as e:
+                            print("Calling ajax with arg went wrong {e}")
                 else:
                     #No arguments in AJAX action
                     write_data = {"interface": "AJAX", "method": "POST", "url": AjaxRunner.AJAX, "data": {"action": action}}
@@ -179,9 +181,8 @@ class AjaxRunner:
                     self.num_ajax_endpoints_called += 2 #user + admin
                     self.num_ajax_endpoints_http_ok += (1 if response.status_code == 200 else 0)
                     self.num_ajax_endpoints_http_ok += (1 if response_admin.status_code == 200 else 0)
-            
             except req.exceptions.RequestException as e:
-                    log.red(f"Error calling AJAX Action: {action} without data: {e}")
+                log.red(f"Error calling AJAX Action: {action} without data: {e}")
         wait_if_change_detected()
         delete_test_file()
                     
