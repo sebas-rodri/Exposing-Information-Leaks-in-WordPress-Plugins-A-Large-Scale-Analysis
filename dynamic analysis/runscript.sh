@@ -36,7 +36,7 @@ do
     docker logs wp-${slug}-runner-1 >> ./logs/runner-container.log
 
     rm -rf plugins
-    rm -rf shared-wordpress
+    rm -f shared-wordpress/function-hooking.json
     rm -rf results
     docker compose -p wp-${slug} down
     docker network prune -f 

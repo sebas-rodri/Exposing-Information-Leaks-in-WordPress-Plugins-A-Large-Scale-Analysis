@@ -454,8 +454,14 @@ def main():
     global NUM_REST_ENDPOINTS_HTTP_OK
     start = time.time()
     ajax = AjaxRunner()
-    ajax.run()
-    find_rest_api_endpoints()
+    try:
+        ajax.run()
+    except Exception as e:
+        print(f"Critical Error in calling ajax actions {e}")
+    try:
+        find_rest_api_endpoints()
+    except Exception as e:
+        print(f"Critical Error in calling REST routes {e}")
     end = time.time()
     total_time_spent = end - start
     ## Call Save methods
