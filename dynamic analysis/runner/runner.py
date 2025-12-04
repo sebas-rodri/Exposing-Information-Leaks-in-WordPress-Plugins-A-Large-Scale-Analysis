@@ -379,7 +379,10 @@ def create_possible_routes(base_url: str, details: dict) -> dict:
                 possible_routes[method].append({"url": base_url, "data": {}})
     
     global NUM_UNIQUE_REST_ENDPOINTS
-    NUM_UNIQUE_REST_ENDPOINTS = len(possible_routes.values())         
+    try:
+        NUM_UNIQUE_REST_ENDPOINTS = sum(len(routes) for routes in possible_routes.values())
+    except:
+        pass        
     return possible_routes
 
 def test_endpoints(routes: dict):
