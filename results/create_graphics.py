@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 
+def save_latex(latex_pf, filename):
+    latex_pf = latex_pf.replace("\\begin{table}", "\\begin{table}[H]\n\\centering")
+    latex_pf = latex_pf.replace("_", "\\_")
+    with open(f"tables/{filename}.tex", "w") as f:
+        f.write(latex_pf)
+
 if len(sys.argv) != 2:
     print("Usage: python create_graphics.py <path_to_duckdb>")
     sys.exit(1)
@@ -11,12 +17,24 @@ con = duckdb.connect(sys.argv[1])
 
 #Static Analysis
 #Count Plugins that were handled successfully
+ajax_route_count = con.sql("""
+                            SELECT COUNT(*) AS Different_ajax_routes, COUNT(DISTINCT plugin_slug) AS NUM_PLUGINS_WITH_AJAX_ROUTES
+                            FROM ajax_routes;
+                            """).to_df()
+
+ajax_arg_count = con.sql("""
+                            SELECT COUNT(*) AS Different_ajax_route_arguments
+                            FROM ajax_route_arguments;
+                            """).to_df()
+
+           
+                            
 plugin_count = con.sql("""
                        SELECT COUNT(*) AS NUM_PLUGINS FROM plugins;
                        """).to_df()
 
 print(plugin_count)
-plugin_count.plot()
+#plugin_count.plot()
 #plt.show()
 #Range num downloaded from max to min also avg
 max_min_avg_num_downloads = con.sql("""
@@ -25,26 +43,39 @@ max_min_avg_num_downloads = con.sql("""
                       """).to_df()
 print(max_min_avg_num_downloads)
 
+latex_max_min_avg_num_downloads = max_min_avg_num_downloads.to_latex(index=False, caption="Maximum/Minimum/Average Number of Downloads of Plugins", label="tab:maxminavg_downloads")
+
+save_latex(latex_max_min_avg_num_downloads, "max_min_avg_num_downloads")
+print(latex_max_min_avg_num_downloads)
+
 #Same with active installations
 max_min_avg_active_installations = con.sql("""
                       SELECT MAX(active_installations) as MAX_INSTALLATIONS, MIN(active_installations) as MIN_INSTALLATIONS, ceil(AVG(active_installations)) as AVG_INSTALLATIONS
                       FROM plugins;
                       """).to_df()
+
+latex_max_min_avg_active_installations = max_min_avg_active_installations.to_latex(index=False, caption="Maximum/Minimum/Average Number of Active Installations of Plugins", label="tab:maxminavg_active_installations")
+save_latex(latex_max_min_avg_active_installations, "max_min_avg_active_installations")
+    
 print(max_min_avg_active_installations)
 #Count Semgrep findings per rule
 count_findings = con.sql("""
-                         (SELECT rule_id, COUNT(*) AS NUM_OF_FINDINGS
+                         (SELECT rule_id, COUNT(*) AS "Number of Findings"
                          FROM findings_semgrep 
                          GROUP BY rule_id 
-                         ORDER BY NUM_OF_FINDINGS DESC)
+                         ORDER BY "Number of Findings" DESC)
                          UNION
                          ((SELECT rule_id, 0 from rules) 
                          EXCEPT
                         (SELECT rule_id, 0
                          FROM findings_semgrep
                          GROUP BY rule_id))
-                         ORDER BY NUM_OF_FINDINGS DESC;
+                         ORDER BY "Number of Findings" DESC;
                          """).to_df()
+
+latex_count_findings = count_findings.to_latex(index=False, caption="Number of Findings per Semgrep Rule", label="tab:count_findings")
+
+save_latex(latex_count_findings, "count_findings")
 
 #Query which plugins have encountered a rule e.g WP-DEBUG-LOG_enabling this can be adapted to each rule
 plugins_with_enabling = con.sql("""
@@ -56,12 +87,18 @@ plugins_with_enabling = con.sql("""
                                 ORDER BY num_downloads DESC;
                                 """).to_df()
 print(plugins_with_enabling)
+latex_with_enabling = plugins_with_enabling.to_latex(index=False, caption="Plugins with Findings for WP-DEBUG-LOG_enabling or WP-DEBUG_enabling", label="tab:plugins_with_enabling")
+save_latex(latex_with_enabling, "plugins_with_enabling")
 
 print(count_findings)
 #How many plugins encountered some kind of semgrep error -> Seems to all be 
 error_count = con.sql("""
                       SELECT COUNT(*) as num_of_plugins_with_error, avg(error_count) FROM semgrep_runs WHERE error_count > 0;
                       """).to_df()
+
+errors_not_type_3 = con.sql("""
+                        SELECT errors FROM semgrep_runs WHERE error_count > 0 and errors NOT LIKE '%3%';
+                        """).to_df()
 print(error_count)
 
 """
@@ -100,8 +137,11 @@ debug_in_log_name = con.sql("""
                             AND rule_id = 'file-put-contents_';
                             """).fetchone()[0]
 
+#Others
+#GROUP BY plugin names
 '''
 .htaccess , time() aber das nur bis zu einem gewissen grad, md5(), in tmp directory, date, sys_get_temp_dir()
+Versuch zur Absicherung -> config
 '''
 securing_in_log_name = con.sql("""
     SELECT  count(lines)  
@@ -127,6 +167,7 @@ names_from_a_variable = con.sql("""
 """).fetchone()[0]
 
 print(names_from_a_variable)
+
 
 #Note the rest falls in to other names not tested will be classified as access, containes request business logic, installa logs
 print(f"""
@@ -199,17 +240,22 @@ fwrite_with_fopen_securing_in_log_name = con.sql("""
     AND rule_id = 'fwrite_with-fopen';
 """).fetchone()[0]
 
-fwrite_with_fopen_access = fwrite_with_fopen_total_findings - fwrite_with_fopen_debug - fwrite_with_fopen_error - fwrite_with_fopen_htacess
+fwrite_with_fopen_other = fwrite_with_fopen_total_findings - fwrite_with_fopen_debug - fwrite_with_fopen_error - fwrite_with_fopen_htacess
+
+
 
 print(f"""\nResults for fwrite_with-fopen \n
       Total finding: {fwrite_with_fopen_total_findings}
-      fopen from a variable : {fwrite_with_fopen_from_variable}
       Error logs : {fwrite_with_fopen_error}
       Debug logs : {fwrite_with_fopen_debug}
+      Other logs: {fwrite_with_fopen_other}
       .htaccess writes: {fwrite_with_fopen_htacess}
-      Access logs: {fwrite_with_fopen_access}
       Some kind of securing in logname: {fwrite_with_fopen_securing_in_log_name} 
+      fopen from a variable : {fwrite_with_fopen_from_variable}
       """)
+
+#TODO: Interesting to see which plugins relate to error debug
+
 
 #TODO:Find name of logfile -> Try to categorize, here get lines in parse out part containing log, then just get top 5 names, and try to build categorizes e.g error, debug etc
 #____________________________________________________________#
@@ -263,6 +309,15 @@ file_put_contents_log_file_var_assignment_securing_in_log_name = con.sql("""
     AND rule_id = 'file-put-contents_log-file-var-assignment';
 """).fetchone()[0]
 
+file_put_contents_log_file_var_assignment_variable_names = con.sql("""
+    SELECT  count(lines)
+    FROM findings_semgrep  
+    WHERE (
+        lines SIMILAR TO '.*\$.*=.*\$(?s).*'
+    )
+    AND rule_id = 'file-put-contents_log-file-var-assignment';
+""").fetchone()[0]
+
 file_put_contents_log_file_var_assignment_access = file_put_contents_log_file_var_assignment_total - file_put_contents_log_file_var_assignment_error - file_put_contents_log_file_var_assignment_error - file_put_contents_log_file_var_assignment_htacess
 
 print(f"""
@@ -272,6 +327,7 @@ Results for file_put_contents_log_file_var_assignment
       Debug: {file_put_contents_log_file_var_assignment_debug}
       Access: {file_put_contents_log_file_var_assignment_access}
       securing: {file_put_contents_log_file_var_assignment_securing_in_log_name}
+      Variable created from another variable: {file_put_contents_log_file_var_assignment_variable_names}
       """)
 
 #____________________________________________________________#
@@ -330,9 +386,12 @@ Results for fopen_var-assignment
       .htaccess writes: {fopen_var_assignment_htacess}
       """)
 
+
 #____________________________________________________________#
 #fputs_with-fopen
 #____________________________________________________________#
+
+#0 findings nothing to do.
 
 #####################################################
 #Dynamic Analysis####################################
@@ -346,10 +405,12 @@ sum_table_dynamic_analysis = con.sql(f"""
             sum(num_ajax_endpoints_called) as "total ajax endpoints",
             sum(num_ajax_endpoints_http_ok) as "total ajax httpok",
             sum(num_ajax_endpoints_http_ok) / sum(num_ajax_endpoints_called) as "success quote AJAX",
-            sum(time_spend) + 10000 * {approximate_of_wp_cli_in_seconds} as "total time spend"
+            sum(time_spend) + count(*) * {approximate_of_wp_cli_in_seconds} as "total time spend"
             FROM dynamic_analysis;
                                      """).to_df()
 
+latex_sum_table_dynamic_analysis = sum_table_dynamic_analysis.to_latex(index=False, caption="Summary of Dynamic Analysis Results", label="tab:sum_dynamic_analysis")
+save_latex(latex_sum_table_dynamic_analysis, "sum_table_dynamic_analysis")
 print(sum_table_dynamic_analysis)
 
 con.sql("""
@@ -364,7 +425,7 @@ con.sql("""
 
 number_of_filenames_used_that_contained_logs = con.sql(
     """
-    select COUNT(DISTINCT params) from findings_function_hooks WHERE params LIKE '%log%' AND params not LIKE '%logo%' AND params not LIKE '%login%' AND params not LIKE '%logged%'
+    select COUNT(params) as "Num of filepaths containing log", COUNT(DISTINCT params) as "Num of distinct filepaths containing logs" from findings_function_hooks WHERE params LIKE '%log%' AND params not LIKE '%logo%' AND params not LIKE '%login%' AND params not LIKE '%logged%'
     AND params not LIKE '%blog%' AND params not LIKE '%dialog%' 
     AND params not LIKE '%.php]' AND params not LIKE '%.html%' 
     AND params not LIKE '%.pid%' AND params NOT LIKE '%benchmark-log-plugin%' 
@@ -389,6 +450,14 @@ grouped_log_names = con.sql(
 ).to_df()
 print(grouped_log_names.to_string())
 
+general_function_hooking_info = con.sql(
+    """
+    SELECT COUNT(DISTINCT function) AS "distinct functions hooked",
+            COUNT(DISTINCT params) AS "distinct filepath used",
+            COUNT(*) AS "total function hooks"
+    FROM findings_function_hooks;
+    """).to_df()
+
 functions_used_with_dynamic_tests = con.sql(
     """
     SELECT function, count(*) as "total called"
@@ -396,7 +465,10 @@ functions_used_with_dynamic_tests = con.sql(
     GROUP BY function
     ORDER BY "total called" DESC;
     """
-)
+).to_df()
+
+latex_functions_used_with_dynamic_tests = functions_used_with_dynamic_tests.to_latex(index=False, caption="Functions Called in Dynamic Analysis Tests", label="tab:functions_used_dynamic_tests")
+save_latex(latex_functions_used_with_dynamic_tests, "functions_used_dynamic_tests")
 print(functions_used_with_dynamic_tests)
 
 distinct_path_containing_error = con.sql(
@@ -433,19 +505,100 @@ findings_wp_cli_containing_logs = con.sql(
     AND name_of_changed_file NOT LIKE '%.jpg'
     AND name_of_changed_file NOT LIKE '%.scss'
     AND name_of_changed_file NOT LIKE '%.js'
+    AND name_of_changed_file NOT LIKE '%.html'
+    AND name_of_changed_file NOT LIKE '%.css'
+    AND name_of_changed_file NOT LIKE '%.webp'
+    AND name_of_changed_file NOT LIKE '%CHANGELOG%'
     ;
     """
 ).to_df().to_string() #php raus?
+#Look at last zip file number is log is contained multiple times
 
 print(findings_wp_cli_containing_logs)
 
+findings_wp_cli_containing_logs_group_slug = con.sql(
+    """
+    select plugin_slug, count(*) as num_of_files
+    from findings_wp_cli 
+    where name_of_changed_file similar to  '(?si).*log.*'
+    AND name_of_changed_file NOT LIKE '%.htaccess'
+    AND name_of_changed_file NOT LIKE '%.php'
+    AND name_of_changed_file NOT LIKE '%.png'
+    AND name_of_changed_file NOT LIKE '%.svg'
+    AND name_of_changed_file NOT LIKE '%.jpg'
+    AND name_of_changed_file NOT LIKE '%.scss'
+    AND name_of_changed_file NOT LIKE '%.js'
+    AND name_of_changed_file NOT LIKE '%.html'
+    AND name_of_changed_file NOT LIKE '%.css'
+    AND name_of_changed_file NOT LIKE '%.webp'
+    AND name_of_changed_file NOT LIKE '%CHANGELOG%'
+    GROUP BY plugin_slug
+    ORDER BY num_of_files DESC
+    ;
+    """
+).to_df()
 
+findings_wp_cli_group_filename = con.sql(
+    """
+    select name_of_changed_file, count(*) as num_of_times
+    from findings_wp_cli
+    where name_of_changed_file similar to  '(?si).*log.*'
+     AND name_of_changed_file NOT LIKE '%.htaccess'
+    AND name_of_changed_file NOT LIKE '%.htaccess'
+    AND name_of_changed_file NOT LIKE '%.php'
+    AND name_of_changed_file NOT LIKE '%.png'
+    AND name_of_changed_file NOT LIKE '%.svg'
+    AND name_of_changed_file NOT LIKE '%.jpg'
+    AND name_of_changed_file NOT LIKE '%.scss'
+    AND name_of_changed_file NOT LIKE '%.js'
+    AND name_of_changed_file NOT LIKE '%.html'
+    AND name_of_changed_file NOT LIKE '%.css'
+    AND name_of_changed_file NOT LIKE '%.webp'
+    AND name_of_changed_file NOT LIKE '%CHANGELOG%'
+    GROUP BY name_of_changed_file
+    ORDER BY num_of_times DESC
+    ;
+    """
+).to_df()
+
+latex_findings_wp_cli_group_filename = findings_wp_cli_group_filename.to_latex(index=False, caption="Log File Names Found in WP-CLI Dynamic Analysis", label="tab:findings_wp_cli_log_filenames")
+save_latex(latex_findings_wp_cli_group_filename, "findings_wp_cli_log_filenames")
+print(latex_findings_wp_cli_group_filename)
 ##########################################################
-################# findings_ajax ##########################
+################# findings_rest ##########################
 ##########################################################
+#TODO: Query plugins DESC, type of operation, also AJAX and WP-CLI
+findings_rest_count = con.sql(
+    """
+    select COUNT(*) as num_of_findings
+    from findings_rest;
+    """
+).to_df()
+print(findings_rest_count)
+
+findings_rest_containing_logs_count = con.sql(
+    """
+    select COUNT(*) as num_of_findings
+    from findings_rest
+    where name_of_changed_file similar to  '(?si).*log.*'
+    AND name_of_changed_file NOT LIKE '%.htaccess'
+    AND name_of_changed_file NOT LIKE '%.php'
+    AND name_of_changed_file NOT LIKE '%.png'
+    AND name_of_changed_file NOT LIKE '%.svg'
+    AND name_of_changed_file NOT LIKE '%.jpg'
+    AND name_of_changed_file NOT LIKE '%.scss'
+    AND name_of_changed_file NOT LIKE '%.js'
+    AND name_of_changed_file NOT LIKE '%.html'
+    AND name_of_changed_file NOT LIKE '%.css'
+    AND name_of_changed_file NOT LIKE '%CHANGELOG%'
+    ;
+    """
+).to_df()
+print(findings_rest_containing_logs_count)
+
 findings_rest_containing_logs = con.sql(
     """
-    select DISTINCT name_of_changed_file
+    select name_of_changed_file, count(*) as num_of_times
     from findings_rest 
     where name_of_changed_file similar to  '(?si).*log.*'
     AND name_of_changed_file NOT LIKE '%.htaccess'
@@ -457,15 +610,58 @@ findings_rest_containing_logs = con.sql(
     AND name_of_changed_file NOT LIKE '%.js'
     AND name_of_changed_file NOT LIKE '%.html'
     AND name_of_changed_file NOT LIKE '%.css'
+    AND name_of_changed_file NOT LIKE '%CHANGELOG%'
+    GROUP BY name_of_changed_file
+    ORDER BY num_of_times DESC
     ;
     """
 ).to_df().to_string() #php raus?
 
+
+findings_rest_num_of_debug_logs = con.sql(
+    """
+    select count(DISTINCT name_of_changed_file) as "num_of_debug_logs"
+    from findings_rest 
+    where name_of_changed_file similar to  '(?si).*log.*'
+    AND name_of_changed_file NOT LIKE '%.htaccess'
+    AND name_of_changed_file NOT LIKE '%.php'
+    AND name_of_changed_file NOT LIKE '%.png'
+    AND name_of_changed_file NOT LIKE '%.svg'
+    AND name_of_changed_file NOT LIKE '%.jpg'
+    AND name_of_changed_file NOT LIKE '%.scss'
+    AND name_of_changed_file NOT LIKE '%.js'
+    AND name_of_changed_file NOT LIKE '%.html'
+    AND name_of_changed_file NOT LIKE '%.css'
+    AND name_of_changed_file NOT LIKE '%CHANGELOG%'
+    AND name_of_changed_file SIMILAR TO '(?i).*debug.*'
+    ;
+    """
+).to_df().to_string()
 #Create View and look for debug, error
 print(findings_rest_containing_logs)
 
+findings_rest_num_of_error_logs = con.sql(
+    """
+    select count(DISTINCT name_of_changed_file) as "num_of_debug_logs"
+    from findings_rest 
+    where name_of_changed_file similar to  '(?si).*log.*'
+    AND name_of_changed_file NOT LIKE '%.htaccess'
+    AND name_of_changed_file NOT LIKE '%.php'
+    AND name_of_changed_file NOT LIKE '%.png'
+    AND name_of_changed_file NOT LIKE '%.svg'
+    AND name_of_changed_file NOT LIKE '%.jpg'
+    AND name_of_changed_file NOT LIKE '%.scss'
+    AND name_of_changed_file NOT LIKE '%.js'
+    AND name_of_changed_file NOT LIKE '%.html'
+    AND name_of_changed_file NOT LIKE '%.css'
+    AND name_of_changed_file NOT LIKE '%CHANGELOG%'
+    AND name_of_changed_file SIMILAR TO '(?i).*error.*'
+    ;
+    """
+).to_df().to_string()
+
 ##########################################################
-################# findings_rest ##########################
+################# findings_ajax ##########################
 ##########################################################
 findings_ajax_containing_logs = con.sql(
     """
@@ -481,6 +677,8 @@ findings_ajax_containing_logs = con.sql(
     AND name_of_changed_file NOT LIKE '%.js'
     AND name_of_changed_file NOT LIKE '%.html'
     AND name_of_changed_file NOT LIKE '%.css'
+    AND name_of_changed_file NOT LIKE '%CHANGELOG%'
+    AND name_of_changed_file NOT LIKE '%temp-write-test%'
     ;
     """
 ).to_df().to_string() #php raus?
@@ -491,7 +689,8 @@ findings_ajax_containing_just_some_filtering = con.sql(
     """
     select  DISTINCT name_of_changed_file
     from findings_ajax 
-    where  name_of_changed_file NOT LIKE '%.htaccess'
+    where  name_of_changed_file similar to  '(?si).*log.*'
+    AND name_of_changed_file NOT LIKE '%.htaccess'
     AND name_of_changed_file NOT LIKE '%.php'
     AND name_of_changed_file NOT LIKE '%.png'
     AND name_of_changed_file NOT LIKE '%.svg'
@@ -501,14 +700,14 @@ findings_ajax_containing_just_some_filtering = con.sql(
     AND name_of_changed_file NOT LIKE '%.html'
     AND name_of_changed_file NOT LIKE '%.css'
     AND name_of_changed_file NOT LIKE '%temp-write-test%'
+    AND name_of_changed_file NOT LIKE '%CHANGELOG%'
     ;
     """
 ).to_df().to_string() #php raus?
 
 print(findings_ajax_containing_just_some_filtering)
 
-#Total of AJAX ROUTES called / Total of REST called
-#Comparison to unique Endpoints or AJAX action
+
 #Describe Wp-CLI
 #Describe Test cases
 #Plot from sorted max to low x unique rest called, y active installations
