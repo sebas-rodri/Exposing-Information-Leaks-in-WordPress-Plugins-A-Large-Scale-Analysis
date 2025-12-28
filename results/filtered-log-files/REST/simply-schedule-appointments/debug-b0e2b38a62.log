@@ -1,0 +1,14 @@
+
+The following is logged from ssa_send_support_ticket()
+in /var/www/html/wp-content/plugins/simply-schedule-appointments/includes/class-support-status-api.php line 245:
+
+... create_support_ticket()
+in /var/www/html/wp-content/plugins/simply-schedule-appointments/includes/class-support-status-api.php line 212:
+
+...... call_user_func()
+in  line :
+[2025-12-02 22:32:01] Failed to submit support ticket - status != success - response: Array
+(
+    [error] => Invalid input
+)
+

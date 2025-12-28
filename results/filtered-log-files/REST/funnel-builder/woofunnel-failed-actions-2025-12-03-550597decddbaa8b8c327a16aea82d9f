@@ -1,0 +1,233 @@
+2025-12-03T16:08:11+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_wfacp_stats' doesn't exist
+    [query] => SELECT contact.id as 'id', ( CASE WHEN contact.f_name = '' THEN 'no name' ELSE contact.f_name END ) 'f_name',contact.l_name as 'l_name',contact.contact_no as phone, contact.email as 'email', contact.creation_date as 'date', ( CASE WHEN contact.type = '' THEN 'lead' ELSE 'customer' END ) as 'type' FROM wp_bwf_contact as contact
+			 LEFT JOIN wp_wfacp_stats as aero ON contact.id = aero.cid 
+			 LEFT JOIN wp_bwf_optin_entries as optin ON contact.id = optin.cid	
+			 WHERE 1=1 AND (contact.id IS NOT NULL) AND ( optin.cid IS NOT NULL OR aero.cid IS NOT NULL )  GROUP BY contact.id ORDER BY creation_date DESC LIMIT 0, 20
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Contacts->global_funnel_contacts, WFFN_Funnel_Contacts->get_global_contacts, WFFN_Funnel_Contacts->get_contacts, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:11+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_wfacp_stats' doesn't exist
+    [query] => SELECT contact.id as 'id', ( CASE WHEN contact.f_name = '' THEN 'no name' ELSE contact.f_name END ) 'f_name',contact.l_name as 'l_name',contact.contact_no as phone, contact.email as 'email', contact.creation_date as 'date', ( CASE WHEN contact.type = '' THEN 'lead' ELSE 'customer' END ) as 'type' FROM wp_bwf_contact as contact
+			 LEFT JOIN wp_wfacp_stats as aero ON contact.id = aero.cid 
+			 LEFT JOIN wp_bwf_optin_entries as optin ON contact.id = optin.cid	
+			 WHERE 1=1 AND (contact.id IS NOT NULL) AND ( optin.cid IS NOT NULL OR aero.cid IS NOT NULL )  GROUP BY contact.id ORDER BY creation_date DESC LIMIT 0, 20
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Contacts->global_funnel_contacts, WFFN_Funnel_Contacts->get_global_contacts, WFFN_Funnel_Contacts->get_contacts, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:12+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_wfacp_stats' doesn't exist
+    [query] => SELECT contact.id as 'id', ( CASE WHEN contact.f_name = '' THEN 'no name' ELSE contact.f_name END ) 'f_name',contact.l_name as 'l_name',contact.contact_no as phone, contact.email as 'email', contact.creation_date as 'date', ( CASE WHEN contact.type = '' THEN 'lead' ELSE 'customer' END ) as 'type' FROM wp_bwf_contact as contact
+			 LEFT JOIN wp_wfacp_stats as aero ON contact.id = aero.cid 
+			 LEFT JOIN wp_bwf_optin_entries as optin ON contact.id = optin.cid	
+			 WHERE 1=1 AND (contact.id IS NOT NULL) AND ( optin.cid IS NOT NULL OR aero.cid IS NOT NULL )  GROUP BY contact.id ORDER BY creation_date DESC LIMIT 0, 20
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Contacts->global_funnel_contacts, WFFN_Funnel_Contacts->get_global_contacts, WFFN_Funnel_Contacts->get_contacts, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:44+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:44+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:45+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 AND (tracking.funnel_id = 9223372036854775807) ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:45+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 AND (optin.email like '%0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"%' OR optin.data like '%0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"%') ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:46+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 AND (optin.email like '%9223372036854775807%' OR optin.data like '%9223372036854775807%') ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:46+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '!\")' at line 1
+    [query] => DELETE FROM wp_bwf_optin_entries WHERE id IN (0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\")
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Optin_Contacts_Analytics->delete_optin_entries, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:46+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => DELETE FROM wp_bwf_optin_entries WHERE id IN (9223372036854775807)
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Optin_Contacts_Analytics->delete_optin_entries, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:46+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:46+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:47+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:47+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:47+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 9223372036854775807
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:48+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 9223372036854775807, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:48+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '9.2233720368548E+19, 10' at line 1
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 9.2233720368548E+19, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:49+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:49+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:49+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:50+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:50+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:50+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:50+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:51+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:51+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:52+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 AND (optin.email like '%0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"%' OR optin.data like '%0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"%') AND (tracking.funnel_id = 9223372036854775807) ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+
+2025-12-03T16:08:52+00:00 - 172.18.0.1 Get wpdb last error for query : Array
+(
+    [db_error] => 1
+    [msg] => Table 'exampledb.wp_bwf_optin_entries' doesn't exist
+    [query] => select optin.*, tracking.funnel_id as fid   from wp_bwf_conversion_tracking as tracking JOIN wp_bwf_optin_entries as optin ON tracking.source = optin.id where tracking.type = 1 ORDER BY tracking.source DESC  LIMIT 0, 10
+    [backtrace] => require('wp-blog-header.php'), wp, WP->main, WP->parse_request, do_action_ref_array('parse_request'), WP_Hook->do_action, WP_Hook->apply_filters, call_user_func_array, rest_api_loaded, WP_REST_Server->serve_request, WP_REST_Server->dispatch, WP_REST_Server->respond_to_request, call_user_func, WFFN_Funnel_Orders->get_leads, WFFN_Common::maybe_wpdb_error
+)
+

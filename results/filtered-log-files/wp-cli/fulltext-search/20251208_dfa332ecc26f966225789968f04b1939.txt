@@ -1,0 +1,689 @@
+2025-12-08 12:12:58 [CORE] Version updates: Array
+(
+    [is_new] => 1
+    [is_rebuild] => 1
+    [text] => Array
+        (
+            [0] => <b style="color: red;">Congratulations!</b> <b>WP Fast Total Search plugin</b> has just been installed and successfully activated!<br><br>To complete the installation, we need to create the Search Index of your existing WP posts data. To start this process, simply go to the <a href="admin.php?page=wpfts-options">WPFTS Settings Page</a>
+        )
+
+    [has_changes] => 1
+)
+
+2025-12-08 12:12:59 [DB] Called updateDB()
+2025-12-08 12:12:59 [DB] checkDBTable() for "docs"
+2025-12-08 12:12:59 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_docs` (
+`id` int(11) NOT NULL auto_increment,
+`index_id` int(11) NOT NULL default '0',
+`token` varchar(255) NOT NULL,
+`n` int(10) unsigned NOT NULL default '0',
+PRIMARY KEY (`id`),
+KEY `token` (`token`(190)),
+KEY `index_id` (`index_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:12:59 [DB] Last error: 
+2025-12-08 12:12:59 [DB] checkDBTable() for "index"
+2025-12-08 12:12:59 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_index` (
+`id` int(10) unsigned NOT NULL auto_increment,
+`tid` bigint(20) unsigned NOT NULL,
+`tsrc` varchar(255) NOT NULL,
+`tdt` datetime NOT NULL default '1970-01-01 00:00:00',
+`build_time` int(11) NOT NULL default '0',
+`update_dt` datetime NOT NULL default '1970-01-01 00:00:00',
+`force_rebuild` tinyint(4) NOT NULL default '0',
+`locked_dt` datetime NOT NULL default '1970-01-01 00:00:00',
+`rules_idset` varchar(255) NOT NULL default '',
+PRIMARY KEY (`id`),
+UNIQUE KEY `tid_tsrc_unique` (`tid`,`tsrc`(100)),
+KEY `tid` (`tid`),
+KEY `build_time` (`build_time`),
+KEY `force_rebuild` (`force_rebuild`),
+KEY `locked_dt` (`locked_dt`),
+KEY `tsrc` (`tsrc`(100)),
+KEY `rules_idset` (`rules_idset`(190))
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:12:59 [DB] Last error: 
+2025-12-08 12:12:59 [DB] checkDBTable() for "stops"
+2025-12-08 12:12:59 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_stops` (
+`id` int(10) unsigned NOT NULL auto_increment,
+`word` varchar(255) NOT NULL,
+PRIMARY KEY (`id`),
+UNIQUE KEY `word` (`word`(190))
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:12:59 [DB] Last error: 
+2025-12-08 12:12:59 [DB] checkDBTable() for "vectors"
+2025-12-08 12:12:59 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_vectors` (
+`wid` int(11) NOT NULL,
+`did` int(11) NOT NULL,
+`wn` int(11) NOT NULL default '0',
+UNIQUE KEY `did_wn` (`did`,`wn`),
+KEY `wid` (`wid`),
+KEY `did` (`did`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:12:59 [DB] Last error: 
+2025-12-08 12:12:59 [DB] checkDBTable() for "words"
+2025-12-08 12:12:59 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_words` (
+`id` int(11) NOT NULL auto_increment,
+`word` varchar(255) NOT NULL,
+`act` int(11) NOT NULL default '-1',
+PRIMARY KEY (`id`),
+UNIQUE KEY `word` (`word`(190)),
+KEY `act` (`act`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:12:59 [DB] Last error: 
+2025-12-08 12:12:59 [DB] checkDBTable() for "tw"
+2025-12-08 12:12:59 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_tw` (
+`id` int(11) NOT NULL auto_increment,
+`w` varchar(255) NOT NULL,
+`did` int(11) NOT NULL default '0',
+`wn` int(11) NOT NULL default '0',
+PRIMARY KEY (`id`),
+KEY `w` (`w`(190))
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:00 [DB] Last error: 
+2025-12-08 12:13:00 [DB] checkDBTable() for "vc"
+2025-12-08 12:13:00 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_vc` (
+`id` int(11) NOT NULL auto_increment,
+`wid` int(11) NOT NULL default '0',
+`upd_dt` datetime NOT NULL default '1970-01-01 00:00:00',
+`vc` longblob NULL,
+PRIMARY KEY (`id`),
+KEY `wid` (`wid`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:00 [DB] Last error: 
+2025-12-08 12:13:00 [DB] checkDBTable() for "tp"
+2025-12-08 12:13:00 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_tp` (
+`id` bigint(20) unsigned NOT NULL auto_increment,
+`q_id` int(11) NOT NULL default '0',
+`did` int(11) NOT NULL default '0',
+`pow` int(11) NOT NULL default '0',
+`res` float(10,6) NOT NULL default '0',
+`ts` timestamp NOT NULL default '1970-01-02 00:00:00',
+PRIMARY KEY (`id`),
+KEY `did` (`did`),
+KEY `q_id` (`q_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:00 [DB] Last error: 
+2025-12-08 12:13:00 [DB] checkDBTable() for "qlog"
+2025-12-08 12:13:00 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_qlog` (
+`id` int(11) NOT NULL auto_increment,
+`query` longtext NULL,
+`query_type` varchar(255) NOT NULL default '',
+`preset` varchar(255) NOT NULL default '',
+`widget_name` varchar(255) NOT NULL default '',
+`n_results` int(11) NOT NULL default '0',
+`q_time` float(10,6) NOT NULL default '0',
+`max_ram` bigint(20) NOT NULL default '0',
+`user_id` bigint(20) NOT NULL default '0',
+`req_ip` varchar(40) NOT NULL default '',
+`ref_url` text NULL,
+`insert_dt` datetime NOT NULL default '1970-01-01 00:00:00',
+`wpq_params` longtext NULL,
+`ext` longtext NULL,
+PRIMARY KEY (`id`),
+KEY `query_type` (`query_type`),
+KEY `preset` (`preset`),
+KEY `widget_name` (`widget_name`),
+KEY `req_ip` (`req_ip`),
+KEY `user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:00 [DB] Last error: 
+2025-12-08 12:13:00 [DB] checkDBTable() for "map"
+2025-12-08 12:13:00 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_map` (
+`id` bigint(20) unsigned NOT NULL auto_increment,
+`post_id` bigint(20) unsigned NOT NULL default '0',
+`obj_id` bigint(20) unsigned NOT NULL default '0',
+`obj_type` varchar(50) NOT NULL default '',
+PRIMARY KEY (`id`),
+UNIQUE KEY `post_id` (`post_id`),
+UNIQUE KEY `obj_id` (`obj_id`,`obj_type`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:00 [DB] Last error: 
+2025-12-08 12:13:00 [DB] checkDBTable() for "queue"
+2025-12-08 12:13:00 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_queue` (
+`id` bigint(20) unsigned NOT NULL,
+`post_id` bigint(20) unsigned NOT NULL default '0',
+`remark` varchar(255) NOT NULL default '',
+`insert_dt` datetime NOT NULL default '1970-01-01 00:00:00',
+PRIMARY KEY (`id`),
+KEY `post_id` (`post_id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:00 [DB] Last error: 
+2025-12-08 12:13:00 [DB] checkDBTable() for "rawcache"
+2025-12-08 12:13:00 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_rawcache` (
+`id` int(10) unsigned NOT NULL auto_increment,
+`object_id` bigint(20) NOT NULL default '0',
+`object_type` varchar(150) NULL,
+`cached_dt` datetime NULL,
+`insert_dt` datetime NULL,
+`method_id` varchar(150) NULL default '',
+`data` longtext NULL,
+`error` text NULL,
+`filename` text NULL,
+PRIMARY KEY (`id`),
+UNIQUE KEY `object_id_and_type` (`object_id`,`object_type`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:00 [DB] Last error: 
+2025-12-08 12:13:00 [DB] checkDBTable() for "ilog"
+2025-12-08 12:13:00 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_ilog` (
+`id` int(10) unsigned NOT NULL auto_increment,
+`index_id` int(10) unsigned NOT NULL default '0',
+`start_ts` double(18,6) NOT NULL default '0.000000',
+`getpost_ts` double(18,6) NOT NULL default '0.000000',
+`clusters_ts` double(18,6) NOT NULL default '0.000000',
+`cluster_stats` longtext NULL,
+`reindex_ts` double(18,6) NOT NULL default '0.000000',
+`status` int(11) NOT NULL default '0',
+`error` longtext NULL,
+PRIMARY KEY (`id`),
+UNIQUE KEY `index_id` (`index_id`),
+KEY `status` (`status`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:01 [DB] Last error: 
+2025-12-08 12:13:01 [DB] checkDBTable() for "irules"
+2025-12-08 12:13:01 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_irules` (
+`id` int(10) unsigned NOT NULL auto_increment,
+`ident` varchar(130) NOT NULL default '',
+`filter_hash` varchar(50) NOT NULL default '',
+`act_hash` varchar(50) NOT NULL default '',
+`rule_snap` longtext NULL,
+`clone_id` int(11) NOT NULL default '0',
+`filter_sql` longtext NULL,
+`is_valid` int(11) NOT NULL default '0',
+`error_msg` longtext NULL,
+`ord` int(11) NOT NULL default '0',
+`type` int(11) NOT NULL default '0',
+`insert_dt` datetime NOT NULL default '1970-01-01 00:00:00',
+PRIMARY KEY (`id`),
+KEY `ident` (`ident`),
+UNIQUE KEY `ident_acthash` (`ident`,`act_hash`),
+KEY `filter_hash` (`filter_hash`),
+KEY `act_hash` (`act_hash`),
+KEY `clone_id` (`clone_id`),
+KEY `is_valid` (`is_valid`),
+KEY `type` (`type`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:01 [DB] Last error: 
+2025-12-08 12:13:01 [DB] checkDBTable() for "doctree"
+2025-12-08 12:13:01 [DB] The table does not exist, create new: CREATE TABLE `wpftsi_doctree` (
+`id` int(10) unsigned NOT NULL auto_increment,
+`p_tid` bigint(20) unsigned NOT NULL default '0',
+`p_tsrc` varchar(255) NOT NULL default '',
+`p_token` varchar(255) NOT NULL default '',
+`c_tid` bigint(20) unsigned NOT NULL default '0',
+`c_tsrc` varchar(255) NOT NULL default '',
+`c_token` varchar(255) NOT NULL default '',
+PRIMARY KEY (`id`),
+KEY `p_token` (`p_token`(190)),
+KEY `c_token` (`c_token`(190)),
+KEY `p_tid` (`p_tid`,`p_tsrc`(100)),
+KEY `c_tid` (`c_tid`,`c_tsrc`(100)),
+KEY `p_tid_2` (`p_tid`),
+KEY `p_tsrc` (`p_tsrc`(100)),
+KEY `c_tid_2` (`c_tid`),
+KEY `c_tsrc` (`c_tsrc`(100))
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci
+2025-12-08 12:13:01 [DB] Last error: 
+2025-12-08 12:13:01 [DB] updateDB() result: OK
+2025-12-08 12:13:02 [CORE] Plugin activation
+2025-12-08 12:13:02 [DB] Called updateDB()
+2025-12-08 12:13:02 [DB] checkDBTable() for "docs"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: index_id
+2025-12-08 12:13:02 [DB] Processing column: token
+2025-12-08 12:13:02 [DB] Processing column: n
+2025-12-08 12:13:02 [DB] checkDBTable() for "index"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: tid
+2025-12-08 12:13:02 [DB] Processing column: tsrc
+2025-12-08 12:13:02 [DB] Processing column: tdt
+2025-12-08 12:13:02 [DB] Processing column: build_time
+2025-12-08 12:13:02 [DB] Processing column: update_dt
+2025-12-08 12:13:02 [DB] Processing column: force_rebuild
+2025-12-08 12:13:02 [DB] Processing column: locked_dt
+2025-12-08 12:13:02 [DB] Processing column: rules_idset
+2025-12-08 12:13:02 [DB] checkDBTable() for "stops"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: word
+2025-12-08 12:13:02 [DB] checkDBTable() for "vectors"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: wid
+2025-12-08 12:13:02 [DB] Processing column: did
+2025-12-08 12:13:02 [DB] Processing column: wn
+2025-12-08 12:13:02 [DB] checkDBTable() for "words"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: word
+2025-12-08 12:13:02 [DB] Processing column: act
+2025-12-08 12:13:02 [DB] checkDBTable() for "tw"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: w
+2025-12-08 12:13:02 [DB] Processing column: did
+2025-12-08 12:13:02 [DB] Processing column: wn
+2025-12-08 12:13:02 [DB] checkDBTable() for "vc"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: wid
+2025-12-08 12:13:02 [DB] Processing column: upd_dt
+2025-12-08 12:13:02 [DB] Processing column: vc
+2025-12-08 12:13:02 [DB] checkDBTable() for "tp"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: q_id
+2025-12-08 12:13:02 [DB] Processing column: did
+2025-12-08 12:13:02 [DB] Processing column: pow
+2025-12-08 12:13:02 [DB] Processing column: res
+2025-12-08 12:13:02 [DB] Processing column: ts
+2025-12-08 12:13:02 [DB] checkDBTable() for "qlog"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: query
+2025-12-08 12:13:02 [DB] Processing column: query_type
+2025-12-08 12:13:02 [DB] Processing column: preset
+2025-12-08 12:13:02 [DB] Processing column: widget_name
+2025-12-08 12:13:02 [DB] Processing column: n_results
+2025-12-08 12:13:02 [DB] Processing column: q_time
+2025-12-08 12:13:02 [DB] Processing column: max_ram
+2025-12-08 12:13:02 [DB] Processing column: user_id
+2025-12-08 12:13:02 [DB] Processing column: req_ip
+2025-12-08 12:13:02 [DB] Processing column: ref_url
+2025-12-08 12:13:02 [DB] Processing column: insert_dt
+2025-12-08 12:13:02 [DB] Processing column: wpq_params
+2025-12-08 12:13:02 [DB] Processing column: ext
+2025-12-08 12:13:02 [DB] checkDBTable() for "map"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: post_id
+2025-12-08 12:13:02 [DB] Processing column: obj_id
+2025-12-08 12:13:02 [DB] Processing column: obj_type
+2025-12-08 12:13:02 [DB] checkDBTable() for "queue"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: post_id
+2025-12-08 12:13:02 [DB] Processing column: remark
+2025-12-08 12:13:02 [DB] Processing column: insert_dt
+2025-12-08 12:13:02 [DB] checkDBTable() for "rawcache"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: object_id
+2025-12-08 12:13:02 [DB] Processing column: object_type
+2025-12-08 12:13:02 [DB] Processing column: cached_dt
+2025-12-08 12:13:02 [DB] Processing column: insert_dt
+2025-12-08 12:13:02 [DB] Processing column: method_id
+2025-12-08 12:13:02 [DB] Processing column: data
+2025-12-08 12:13:02 [DB] Processing column: error
+2025-12-08 12:13:02 [DB] Processing column: filename
+2025-12-08 12:13:02 [DB] checkDBTable() for "ilog"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: index_id
+2025-12-08 12:13:02 [DB] Processing column: start_ts
+2025-12-08 12:13:02 [DB] Processing column: getpost_ts
+2025-12-08 12:13:02 [DB] Processing column: clusters_ts
+2025-12-08 12:13:02 [DB] Processing column: cluster_stats
+2025-12-08 12:13:02 [DB] Processing column: reindex_ts
+2025-12-08 12:13:02 [DB] Processing column: status
+2025-12-08 12:13:02 [DB] Processing column: error
+2025-12-08 12:13:02 [DB] checkDBTable() for "irules"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: ident
+2025-12-08 12:13:02 [DB] Processing column: filter_hash
+2025-12-08 12:13:02 [DB] Processing column: act_hash
+2025-12-08 12:13:02 [DB] Processing column: rule_snap
+2025-12-08 12:13:02 [DB] Processing column: clone_id
+2025-12-08 12:13:02 [DB] Processing column: filter_sql
+2025-12-08 12:13:02 [DB] Processing column: is_valid
+2025-12-08 12:13:02 [DB] Processing column: error_msg
+2025-12-08 12:13:02 [DB] Processing column: ord
+2025-12-08 12:13:02 [DB] Processing column: type
+2025-12-08 12:13:02 [DB] Processing column: insert_dt
+2025-12-08 12:13:02 [DB] checkDBTable() for "doctree"
+2025-12-08 12:13:02 [DB] Table exists, compare columns
+2025-12-08 12:13:02 [DB] Processing column: id
+2025-12-08 12:13:02 [DB] Processing column: p_tid
+2025-12-08 12:13:02 [DB] Processing column: p_tsrc
+2025-12-08 12:13:02 [DB] Processing column: p_token
+2025-12-08 12:13:02 [DB] Processing column: c_tid
+2025-12-08 12:13:02 [DB] Processing column: c_tsrc
+2025-12-08 12:13:02 [DB] Processing column: c_token
+2025-12-08 12:13:02 [DB] updateDB() result: OK
+2025-12-08 12:13:02 [CORE] Plugin activation completed
+2025-12-08 12:13:03 [CORE] Version updates: Array
+(
+    [is_new] => 
+    [is_rebuild] => 
+    [db_changes] => Array
+        (
+        )
+
+    [text] => Array
+        (
+        )
+
+    [text_notices] => Array
+        (
+            [1.65.225] => <p>We have improved a lot and need to rebuild the index!</p>
+					<p>In our new update <b>1.65.225</b>, we have introduced support for indexing rules, and now all records must comply with this new algorithm. This feature will allow other plugins to add their own rules without having to rebuild the index every time.</p>
+					<p>But today we need to bring all the entries in the index into compliance with the rules.</p>
+					<p>Thank you for your understanding and support!</p>
+        )
+
+    [callback] => Array
+        (
+            [1.38.105] => Closure Object
+                (
+                    [this] => WPFTS_Core Object
+                        (
+                            [_index] => WPFTS_Index Object
+                                (
+                                    [max_word_length] => 255
+                                    [error] => 
+                                    [lock_time] => 300
+                                    [stops:protected] => Array
+                                        (
+                                        )
+
+                                    [_log:protected] => Array
+                                        (
+                                        )
+
+                                    [_logtime:protected] => Array
+                                        (
+                                        )
+
+                                    [_islock:protected] => 1
+                                    [_lastt0] => 0
+                                    [_is_log] => 0
+                                    [_is_show] => 0
+                                    [t_words_rows] => -1
+                                )
+
+                            [_search] => WPFTS_Search Object
+                                (
+                                )
+
+                            [_querylog] => WPFTS_QueryLog Object
+                                (
+                                )
+
+                            [_database] => WPFTS_Database Object
+                                (
+                                )
+
+                            [_admin_actions] => 
+                            [_pid:protected] => 
+                            [_log_file:protected] => /var/www/html/wp-content/uploads/wpfts_logs/20251208_dfa332ecc26f966225789968f04b1939.txt
+                            [_wpfts_domain] => https://fulltextsearch.org
+                            [_documentation_link] => /documentation
+                            [_forum_link] => /forum/
+                            [_flare_url] => https://fulltextsearch.org/fire
+                            [root_url] => http://localhost:8080/wp-content/plugins/fulltext-search
+                            [root_dir] => /var/www/html/wp-content/plugins/fulltext-search
+                            [db] => WPFTS_DB Object
+                                (
+                                )
+
+                            [index_error] => 
+                            [forced_se_query] => 
+                            [defer_indexing] => 
+                            [widget_presets] => Array
+                                (
+                                )
+
+                            [irules_base] => Array
+                                (
+                                )
+
+                            [irules_user] => Array
+                                (
+                                )
+
+                            [irules_final] => Array
+                                (
+                                )
+
+                            [irules_cache] => 
+                            [irules_stats_cache] => 
+                            [tablist] => Array
+                                (
+                                    [0] => vectors
+                                    [1] => words
+                                    [2] => index
+                                    [3] => docs
+                                    [4] => rawcache
+                                )
+
+                            [is_wpfts_settings_page] => 
+                            [toplevel_screen] => ---
+                            [prefix_screen] => ---
+                            [se_css_cache_timeout] => 600
+                            [se_css_tr_name] => wpfts_se_css_transient
+                            [_flare] => WPFTS_Flare Object
+                                (
+                                    [target_url] => https://fulltextsearch.org/fire
+                                    [mid] => 0f582b3c48953b166ec6eb9cf0b7464b|http://localhost:8080|localhost:8080
+                                )
+
+                            [_dev_debug] => 
+                            [is_mariadb] => 
+                            [mysql_version] => 8.0.44
+                            [prefix] => wpftsi_
+                        )
+
+                )
+
+            [1.42.122] => Closure Object
+                (
+                    [this] => WPFTS_Core Object
+                        (
+                            [_index] => WPFTS_Index Object
+                                (
+                                    [max_word_length] => 255
+                                    [error] => 
+                                    [lock_time] => 300
+                                    [stops:protected] => Array
+                                        (
+                                        )
+
+                                    [_log:protected] => Array
+                                        (
+                                        )
+
+                                    [_logtime:protected] => Array
+                                        (
+                                        )
+
+                                    [_islock:protected] => 1
+                                    [_lastt0] => 0
+                                    [_is_log] => 0
+                                    [_is_show] => 0
+                                    [t_words_rows] => -1
+                                )
+
+                            [_search] => WPFTS_Search Object
+                                (
+                                )
+
+                            [_querylog] => WPFTS_QueryLog Object
+                                (
+                                )
+
+                            [_database] => WPFTS_Database Object
+                                (
+                                )
+
+                            [_admin_actions] => 
+                            [_pid:protected] => 
+                            [_log_file:protected] => /var/www/html/wp-content/uploads/wpfts_logs/20251208_dfa332ecc26f966225789968f04b1939.txt
+                            [_wpfts_domain] => https://fulltextsearch.org
+                            [_documentation_link] => /documentation
+                            [_forum_link] => /forum/
+                            [_flare_url] => https://fulltextsearch.org/fire
+                            [root_url] => http://localhost:8080/wp-content/plugins/fulltext-search
+                            [root_dir] => /var/www/html/wp-content/plugins/fulltext-search
+                            [db] => WPFTS_DB Object
+                                (
+                                )
+
+                            [index_error] => 
+                            [forced_se_query] => 
+                            [defer_indexing] => 
+                            [widget_presets] => Array
+                                (
+                                )
+
+                            [irules_base] => Array
+                                (
+                                )
+
+                            [irules_user] => Array
+                                (
+                                )
+
+                            [irules_final] => Array
+                                (
+                                )
+
+                            [irules_cache] => 
+                            [irules_stats_cache] => 
+                            [tablist] => Array
+                                (
+                                    [0] => vectors
+                                    [1] => words
+                                    [2] => index
+                                    [3] => docs
+                                    [4] => rawcache
+                                )
+
+                            [is_wpfts_settings_page] => 
+                            [toplevel_screen] => ---
+                            [prefix_screen] => ---
+                            [se_css_cache_timeout] => 600
+                            [se_css_tr_name] => wpfts_se_css_transient
+                            [_flare] => WPFTS_Flare Object
+                                (
+                                    [target_url] => https://fulltextsearch.org/fire
+                                    [mid] => 0f582b3c48953b166ec6eb9cf0b7464b|http://localhost:8080|localhost:8080
+                                )
+
+                            [_dev_debug] => 
+                            [is_mariadb] => 
+                            [mysql_version] => 8.0.44
+                            [prefix] => wpftsi_
+                        )
+
+                )
+
+            [1.55.201] => Closure Object
+                (
+                    [this] => WPFTS_Core Object
+                        (
+                            [_index] => WPFTS_Index Object
+                                (
+                                    [max_word_length] => 255
+                                    [error] => 
+                                    [lock_time] => 300
+                                    [stops:protected] => Array
+                                        (
+                                        )
+
+                                    [_log:protected] => Array
+                                        (
+                                        )
+
+                                    [_logtime:protected] => Array
+                                        (
+                                        )
+
+                                    [_islock:protected] => 1
+                                    [_lastt0] => 0
+                                    [_is_log] => 0
+                                    [_is_show] => 0
+                                    [t_words_rows] => -1
+                                )
+
+                            [_search] => WPFTS_Search Object
+                                (
+                                )
+
+                            [_querylog] => WPFTS_QueryLog Object
+                                (
+                                )
+
+                            [_database] => WPFTS_Database Object
+                                (
+                                )
+
+                            [_admin_actions] => 
+                            [_pid:protected] => 
+                            [_log_file:protected] => /var/www/html/wp-content/uploads/wpfts_logs/20251208_dfa332ecc26f966225789968f04b1939.txt
+                            [_wpfts_domain] => https://fulltextsearch.org
+                            [_documentation_link] => /documentation
+                            [_forum_link] => /forum/
+                            [_flare_url] => https://fulltextsearch.org/fire
+                            [root_url] => http://localhost:8080/wp-content/plugins/fulltext-search
+                            [root_dir] => /var/www/html/wp-content/plugins/fulltext-search
+                            [db] => WPFTS_DB Object
+                                (
+                                )
+
+                            [index_error] => 
+                            [forced_se_query] => 
+                            [defer_indexing] => 
+                            [widget_presets] => Array
+                                (
+                                )
+
+                            [irules_base] => Array
+                                (
+                                )
+
+                            [irules_user] => Array
+                                (
+                                )
+
+                            [irules_final] => Array
+                                (
+                                )
+
+                            [irules_cache] => 
+                            [irules_stats_cache] => 
+                            [tablist] => Array
+                                (
+                                    [0] => vectors
+                                    [1] => words
+                                    [2] => index
+                                    [3] => docs
+                                    [4] => rawcache
+                                )
+
+                            [is_wpfts_settings_page] => 
+                            [toplevel_screen] => ---
+                            [prefix_screen] => ---
+                            [se_css_cache_timeout] => 600
+                            [se_css_tr_name] => wpfts_se_css_transient
+                            [_flare] => WPFTS_Flare Object
+                                (
+                                    [target_url] => https://fulltextsearch.org/fire
+                                    [mid] => 0f582b3c48953b166ec6eb9cf0b7464b|http://localhost:8080|localhost:8080
+                                )
+
+                            [_dev_debug] => 
+                            [is_mariadb] => 
+                            [mysql_version] => 8.0.44
+                            [prefix] => wpftsi_
+                        )
+
+                )
+
+        )
+
+    [is_version_changed] => 
+    [has_changes] => 1
+)
+

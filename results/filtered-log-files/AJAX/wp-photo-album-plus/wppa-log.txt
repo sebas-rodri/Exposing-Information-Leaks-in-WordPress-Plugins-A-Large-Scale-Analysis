@@ -1,0 +1,6 @@
+{b}{span style="color:red;" }Err{/span}{/b}: on:02.12.2025 21:29:09: admin (60): Failed to create wp_wppa_index
+{b}{span style="color:red;" }Err{/span}{/b}: on:02.12.2025 21:29:09: admin (60): Failed to create wp_wppa_session
+{b}{span style="color:red;" }Err{/span}{/b}: on:02.12.2025 21:29:10: admin (60): Failed to create wp_wppa_caches
+{b}{span style="color:red;" }Err{/span}{/b}: on:02.12.2025 21:29:11: admin (58): Could not create .../wp-content/wppa-depot/admin
+{b}{span style="color:red;" }Err{/span}{/b}: on:02.12.2025 21:29:11: admin (60): Could not create .../wp-content/wppa-depot/admin
+{b}{span style="color:red;" }Err{/span}{/b}: on:02.12.2025 21:29:12: admin (61): Could not create .../wp-content/wppa-depot/admin

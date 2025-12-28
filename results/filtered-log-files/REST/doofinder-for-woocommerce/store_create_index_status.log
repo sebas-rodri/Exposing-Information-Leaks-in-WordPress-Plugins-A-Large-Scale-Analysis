@@ -1,0 +1,107 @@
+
+5 Dec 25, 13:35
+'Received indexing status request with payload:
+WP_REST_Request Object
+(
+    [method:protected] => POST
+    [params:protected] => Array
+        (
+            [URL] => Array
+                (
+                )
+
+            [GET] => Array
+                (
+                )
+
+            [POST] => Array
+                (
+                )
+
+            [FILES] => Array
+                (
+                )
+
+            [JSON] => Array
+                (
+                )
+
+            [defaults] => Array
+                (
+                )
+
+        )
+
+    [headers:protected] => Array
+        (
+            [authorization] => Array
+                (
+                    [0] => 
+                )
+
+            [host] => Array
+                (
+                    [0] => localhost:8080
+                )
+
+            [user_agent] => Array
+                (
+                    [0] => python-requests/2.32.5
+                )
+
+            [accept_encoding] => Array
+                (
+                    [0] => gzip, deflate, zstd
+                )
+
+            [accept] => Array
+                (
+                    [0] => */*
+                )
+
+            [connection] => Array
+                (
+                    [0] => keep-alive
+                )
+
+            [content_length] => Array
+                (
+                    [0] => 2
+                )
+
+            [content_type] => Array
+                (
+                    [0] => application/json
+                )
+
+        )
+
+    [body:protected] => {}
+    [route:protected] => /doofinder/v1/index-status
+    [attributes:protected] => Array
+        (
+            [methods] => Array
+                (
+                    [POST] => 1
+                )
+
+            [accept_json] => 
+            [accept_raw] => 
+            [show_in_index] => 1
+            [args] => Array
+                (
+                )
+
+            [callback] => Array
+                (
+                    [0] => Doofinder\\WP\\Index_Status_Handler
+                    [1] => index_status
+                )
+
+            [permission_callback] => __return_true
+        )
+
+    [parsed_json:protected] => 1
+    [parsed_body:protected] => 
+)
+'
