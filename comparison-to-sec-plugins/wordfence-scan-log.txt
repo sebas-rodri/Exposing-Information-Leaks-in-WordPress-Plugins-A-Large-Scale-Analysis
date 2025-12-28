@@ -1,0 +1,89 @@
+[Dec 28 11:50:46:1766922646.362058:1:info] Scan Complete. Scanned 4231 files, 6 plugins, 1 themes, 2 posts, 1 comments and 364 URLs in 40 seconds.
+[Dec 28 11:50:46:1766922646.353842:2:info] Wordfence used 10.14 MB of memory for scan. Server peak memory usage was: 68.64 MB
+[Dec 28 11:50:46:1766922646.347201:1:info] -------------------
+[Dec 28 11:50:46:1766922646.315398:2:info] Done examining URLs
+[Dec 28 11:50:46:1766922646.311178:2:info] Examining URLs found in the options we scanned for dangerous websites
+[Dec 28 11:50:41:1766922641.816967:2:info] Starting password strength check on 1 user.
+[Dec 28 11:50:41:1766922641.710883:2:info] Done host key check.
+[Dec 28 11:50:41:1766922641.190921:2:info] Checking 1 host keys against Wordfence scanning servers.
+[Dec 28 11:50:41:1766922641.071948:2:info] Done examining URLs
+[Dec 28 11:50:41:1766922641.067970:2:info] Examining URLs found in posts we scanned for dangerous websites
+[Dec 28 11:50:40:1766922640.929605:2:info] Done file contents scan
+[Dec 28 11:50:40:1766922640.917894:2:info] Done host key check.
+[Dec 28 11:50:40:1766922640.349674:2:info] Checking 31 host keys against Wordfence scanning servers.
+[Dec 28 11:50:40:1766922640.344629:2:info] Asking Wordfence to check URLs against malware list.
+[Dec 28 11:50:40:1766922640.339885:2:info] Scanned contents of 90 additional files at 7.97 per second
+[Dec 28 11:50:39:1766922639.948193:2:info] Scanned contents of 88 additional files at 8.07 per second
+[Dec 28 11:50:38:1766922638.928519:2:info] Scanned contents of 78 additional files at 7.89 per second
+[Dec 28 11:50:37:1766922637.885578:2:info] Scanned contents of 68 additional files at 7.69 per second
+[Dec 28 11:50:36:1766922636.507688:2:info] Scanned contents of 61 additional files at 8.17 per second
+[Dec 28 11:50:35:1766922635.485831:2:info] Scanned contents of 56 additional files at 8.70 per second
+[Dec 28 11:50:34:1766922634.362170:2:info] Scanned contents of 47 additional files at 8.84 per second
+[Dec 28 11:50:33:1766922633.280205:2:info] Scanned contents of 43 additional files at 10.16 per second
+[Dec 28 11:50:32:1766922632.228295:2:info] Scanned contents of 33 additional files at 10.37 per second
+[Dec 28 11:50:31:1766922631.150641:2:info] Scanned contents of 25 additional files at 11.88 per second
+[Dec 28 11:50:30:1766922630.095012:2:info] Scanned contents of 12 additional files at 11.44 per second
+[Dec 28 11:50:29:1766922629.037152:2:info] Starting scan of file contents
+[Dec 28 11:50:26:1766922626.271546:2:info] Analyzed 4231 files containing 92.79 MB of data.
+[Dec 28 11:50:26:1766922626.119049:2:info] Analyzed 4200 files containing 92.44 MB of data so far
+[Dec 28 11:50:26:1766922626.021144:2:info] Analyzed 4100 files containing 90.57 MB of data so far
+[Dec 28 11:50:25:1766922625.948977:2:info] Analyzed 4000 files containing 89.33 MB of data so far
+[Dec 28 11:50:25:1766922625.746639:2:info] Analyzed 3900 files containing 86.18 MB of data so far
+[Dec 28 11:50:25:1766922625.645911:2:info] Analyzed 3800 files containing 83.42 MB of data so far
+[Dec 28 11:50:25:1766922625.531117:2:info] Analyzed 3700 files containing 81.26 MB of data so far
+[Dec 28 11:50:25:1766922625.380872:2:info] Analyzed 3600 files containing 77.59 MB of data so far
+[Dec 28 11:50:25:1766922625.219288:2:info] Analyzed 3500 files containing 69.74 MB of data so far
+[Dec 28 11:50:24:1766922624.954882:2:info] Analyzed 3400 files containing 56.91 MB of data so far
+[Dec 28 11:50:24:1766922624.878009:2:info] Analyzed 3300 files containing 55.14 MB of data so far
+[Dec 28 11:50:24:1766922624.810005:2:info] Analyzed 3200 files containing 54.25 MB of data so far
+[Dec 28 11:50:24:1766922624.673610:2:info] Analyzed 3100 files containing 51.12 MB of data so far
+[Dec 28 11:50:24:1766922624.595881:2:info] Analyzed 3000 files containing 48.89 MB of data so far
+[Dec 28 11:50:24:1766922624.490999:2:info] Analyzed 2900 files containing 47.42 MB of data so far
+[Dec 28 11:50:24:1766922624.427257:2:info] Analyzed 2800 files containing 47.22 MB of data so far
+[Dec 28 11:50:24:1766922624.370021:2:info] Analyzed 2700 files containing 47.1 MB of data so far
+[Dec 28 11:50:24:1766922624.310066:2:info] Analyzed 2600 files containing 46.98 MB of data so far
+[Dec 28 11:50:24:1766922624.249770:2:info] Analyzed 2500 files containing 46.7 MB of data so far
+[Dec 28 11:50:24:1766922624.095035:2:info] Analyzed 2400 files containing 46.52 MB of data so far
+[Dec 28 11:50:24:1766922624.026509:2:info] Analyzed 2300 files containing 46.26 MB of data so far
+[Dec 28 11:50:23:1766922623.966483:2:info] Analyzed 2200 files containing 45.95 MB of data so far
+[Dec 28 11:50:23:1766922623.910903:2:info] Analyzed 2100 files containing 45.61 MB of data so far
+[Dec 28 11:50:23:1766922623.836194:2:info] Analyzed 2000 files containing 44.7 MB of data so far
+[Dec 28 11:50:23:1766922623.718612:2:info] Analyzed 1900 files containing 43.1 MB of data so far
+[Dec 28 11:50:23:1766922623.647470:2:info] Analyzed 1800 files containing 42.36 MB of data so far
+[Dec 28 11:50:23:1766922623.532149:2:info] Analyzed 1700 files containing 40.95 MB of data so far
+[Dec 28 11:50:23:1766922623.402976:2:info] Analyzed 1600 files containing 38.05 MB of data so far
+[Dec 28 11:50:23:1766922623.329286:2:info] Analyzed 1500 files containing 37.12 MB of data so far
+[Dec 28 11:50:23:1766922623.164149:2:info] Analyzed 1400 files containing 35.64 MB of data so far
+[Dec 28 11:50:23:1766922623.041747:2:info] Analyzed 1300 files containing 31.52 MB of data so far
+[Dec 28 11:50:22:1766922622.954557:2:info] Analyzed 1200 files containing 30.96 MB of data so far
+[Dec 28 11:50:22:1766922622.608151:2:info] Analyzed 1100 files containing 27.87 MB of data so far
+[Dec 28 11:50:22:1766922622.154988:2:info] Analyzed 1000 files containing 22.09 MB of data so far
+[Dec 28 11:50:21:1766922621.923852:2:info] Analyzed 900 files containing 21.76 MB of data so far
+[Dec 28 11:50:21:1766922621.643598:2:info] Analyzed 800 files containing 20.45 MB of data so far
+[Dec 28 11:50:21:1766922621.393200:2:info] Analyzed 700 files containing 19.2 MB of data so far
+[Dec 28 11:50:21:1766922621.191558:2:info] Analyzed 600 files containing 7.69 MB of data so far
+[Dec 28 11:50:20:1766922620.959194:2:info] Analyzed 500 files containing 6.05 MB of data so far
+[Dec 28 11:50:20:1766922620.470318:2:info] Analyzed 400 files containing 3.99 MB of data so far
+[Dec 28 11:50:20:1766922620.212311:2:info] Analyzed 300 files containing 3.16 MB of data so far
+[Dec 28 11:50:20:1766922620.069315:2:info] Analyzed 200 files containing 2.56 MB of data so far
+[Dec 28 11:50:19:1766922619.729192:2:info] Analyzed 100 files containing 542.53 KB of data so far
+[Dec 28 11:50:19:1766922619.587407:2:info] 4232 files indexed
+[Dec 28 11:50:19:1766922619.518541:2:info] 4000 files indexed
+[Dec 28 11:50:19:1766922619.344526:2:info] 3500 files indexed
+[Dec 28 11:50:19:1766922619.194305:2:info] 3000 files indexed
+[Dec 28 11:50:19:1766922619.061647:2:info] 2500 files indexed
+[Dec 28 11:50:18:1766922618.827261:2:info] 2000 files indexed
+[Dec 28 11:50:18:1766922618.672500:2:info] 1500 files indexed
+[Dec 28 11:50:18:1766922618.345684:2:info] 1000 files indexed
+[Dec 28 11:50:18:1766922618.160949:2:info] 500 files indexed
+[Dec 28 11:50:13:1766922613.908490:2:info] Found 1 theme
+[Dec 28 11:50:13:1766922613.902485:2:info] Getting theme list from WordPress
+[Dec 28 11:50:13:1766922613.899180:2:info] Found 5 plugins
+[Dec 28 11:50:13:1766922613.864226:2:info] Getting plugin list from WordPress
+[Dec 28 11:50:13:1766922613.259893:2:info] The disk has 6563648 MB available
+[Dec 28 11:50:13:1766922613.250664:2:info] Total disk space: 17.1 TB -- Free disk space: 6.26 TB
+[Dec 28 11:50:06:1766922606.024483:1:info] Contacting Wordfence to initiate scan
+[Dec 28 11:49:35:1766922575.326226:1:info] Quick Scan Complete. Scanned in 1 second.
+[Dec 28 11:49:35:1766922575.305411:2:info] Wordfence used 0 B of memory for scan. Server peak memory usage was: 52.5 MB
+[Dec 28 11:49:35:1766922575.284986:1:info] -------------------
+[Dec 28 11:49:34:1766922574.044731:1:info] Initiating quick scan
