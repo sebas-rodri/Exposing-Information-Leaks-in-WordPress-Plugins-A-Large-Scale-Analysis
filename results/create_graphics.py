@@ -116,6 +116,7 @@ total_findings = con.sql("""
                          """).fetchone()[0]
 error_in_log_name = con.sql("""
                             SELECT count(lines) 
+
                             FROM findings_semgrep  
                             WHERE (lines 
                             LIKE '%file_put_contents(%error%,%'  OR  lines LIKE '%file_put_contents(%fail%,%'
@@ -157,6 +158,14 @@ securing_in_log_name = con.sql("""
     AND rule_id = 'file-put-contents_';
 """).fetchone()[0]
 
+htacess = con.sql("""
+    SELECT  count(lines)  
+    FROM findings_semgrep  
+    WHERE (
+        lines SIMILAR TO '(?s).*file_put_contents\(.*htaccess.*'
+    )
+    AND rule_id = 'file_put-contents_';
+""").fetchone()[0]
 names_from_a_variable = con.sql("""
     SELECT  count(lines)  
     FROM findings_semgrep  
@@ -175,8 +184,9 @@ print(f"""
       Total findings: {total_findings}
       Errors: {error_in_log_name}
       Debug: {debug_in_log_name}
-      Access: {total_findings - error_in_log_name - debug_in_log_name}
+      other: {total_findings - error_in_log_name - debug_in_log_name -htacess}
       securing: {securing_in_log_name}
+      htaccess: {htacess}
       file_put_contents using a variable as handle: {names_from_a_variable}
       """)
 
@@ -194,7 +204,7 @@ fwrite_with_fopen_from_variable = con.sql("""
     SELECT  count(lines)  
     FROM findings_semgrep  
     WHERE (
-        lines SIMILAR TO '(?s).*fopen\(.?\$.*'
+        lines SIMILAR TO '(?s).*fopen\(.?\$.*', 
     )
     AND rule_id = 'fwrite_with-fopen';
 """).fetchone()[0]
@@ -212,7 +222,11 @@ fwrite_with_fopen_debug = con.sql("""
     SELECT  count(lines)  
     FROM findings_semgrep  
     WHERE (
-        lines SIMILAR TO '(?i).*fopen\(.*debug(?s).*'
+        lines SIMILAR TO '(?i).*fopen\(.*debug(?s).*' or
+        lines SIMILAR TO '(?i).*fopen\(.*dev(?s).*' or
+        lines SIMILAR TO '(?i).*fopen\(.*trace(?s).*' or
+        lines SIMILAR TO '(?i).*fopen\(.*verbose(?s).*' or
+        lines SIMILAR TO '(?i).*fopen\(.*diagnostic(?s).*'
     )
     AND rule_id = 'fwrite_with-fopen';
 """).fetchone()[0]
@@ -222,6 +236,9 @@ fwrite_with_fopen_error = con.sql("""
     FROM findings_semgrep  
     WHERE (
         lines SIMILAR TO '(?i).*fopen\(.*error(?s).*'
+        or lines SIMILAR TO '(?i).*fopen\(.*fail(?s).*'
+        or lines SIMILAR TO '(?i).*fopen\(.*exception(?s).*'
+        or lines SIMILAR TO '(?i).*fopen\(.*fatal(?s).*'
     )
     AND rule_id = 'fwrite_with-fopen';
 """).fetchone()[0]
@@ -254,10 +271,7 @@ print(f"""\nResults for fwrite_with-fopen \n
       fopen from a variable : {fwrite_with_fopen_from_variable}
       """)
 
-#TODO: Interesting to see which plugins relate to error debug
 
-
-#TODO:Find name of logfile -> Try to categorize, here get lines in parse out part containing log, then just get top 5 names, and try to build categorizes e.g error, debug etc
 #____________________________________________________________#
 #file-put-contents_log-file-var-assignment
 #____________________________________________________________#
@@ -273,6 +287,9 @@ file_put_contents_log_file_var_assignment_error = con.sql("""
     FROM findings_semgrep  
     WHERE (
         lines SIMILAR TO '(?i).*error(?s).*'
+        or lines SIMILAR TO '(?i).*fail(?s).*'
+        or lines SIMILAR TO '(?i).*exception(?s).*'
+        or lines SIMILAR TO '(?i).*fatal(?s).*'
     )
     AND rule_id = 'file-put-contents_log-file-var-assignment';
 """).fetchone()[0]
@@ -344,6 +361,9 @@ fopen_var_assignment_error = con.sql("""
     FROM findings_semgrep  
     WHERE (
         lines SIMILAR TO '(?i).*error(?s).*'
+        or lines SIMILAR TO '(?i).*fail(?s).*'
+        or lines SIMILAR TO '(?i).*exception(?s).*'
+        or lines SIMILAR TO '(?i).*fatal(?s).*'
     )
     AND rule_id = 'fopen_var-assignment';
 """).fetchone()[0]
@@ -353,15 +373,23 @@ fopen_var_assignment_debug = con.sql("""
     FROM findings_semgrep  
     WHERE (
         lines SIMILAR TO '(?i).*debug(?s).*'
+        or lines SIMILAR TO '(?i).*dev(?s).*'
+        or lines SIMILAR TO '(?i).*trace(?s).*'
+        or lines SIMILAR TO '(?i).*verbose(?s).*'
+        or lines SIMILAR TO '(?i).*diagnostic(?s).*'
     )
     AND rule_id = 'fopen_var-assignment';
 """).fetchone()[0]
 
-fopen_var_assignment_error = con.sql("""
+fopen_var_assignment_securing_in_log_name = con.sql("""
     SELECT  count(lines)  
     FROM findings_semgrep  
     WHERE (
-        lines SIMILAR TO '(?i).*error(?s).*'
+        lines SIMILAR TO '(?s).*fopen\([^,]*/tmp/\(.*'
+        OR lines SIMILAR TO '(?s).*fopen\([^,]*sys_get_temp_dir()\(.*'
+        OR lines SIMILAR TO '(?s).*fopen\([^,]*time\(.*'
+        OR lines SIMILAR TO '(?s).*fopen\([^,]*date\(.*'
+        OR lines SIMILAR TO '(?s).*fopen\([^,]*md5\(.*'
     )
     AND rule_id = 'fopen_var-assignment';
 """).fetchone()[0]
@@ -375,7 +403,17 @@ fopen_var_assignment_htacess = con.sql("""
     AND rule_id = 'fopen_var-assignment';
 """).fetchone()[0]
 
-fopen_var_assignment_access = fopen_var_assignment_total - fopen_var_assignment_debug - fopen_var_assignment_error
+fopen_var_assignment_file_var_assignment = con.sql("""
+    SELECT  count(lines)
+    FROM findings_semgrep  
+    WHERE (
+        lines SIMILAR TO '.*\$.*=.*\$(?s).*'
+    )
+    AND rule_id = 'fopen_var-assignment';
+""").fetchone()[0]
+#securing in log name
+
+fopen_var_assignment_access = fopen_var_assignment_total - fopen_var_assignment_debug - fopen_var_assignment_error - fopen_var_assignment_htacess
 
 print(f"""
 Results for fopen_var-assignment
@@ -433,6 +471,15 @@ number_of_filenames_used_that_contained_logs = con.sql(
     AND params not LIKE '%monolog%';
     """
 )
+
+number_of_filenames_used_that_contained_logs_group_by_slug = con.sql("""
+        select COUNT(params) as "Num of filepaths containing log", COUNT(DISTINCT params) as "Num of distinct filepaths containing logs" from findings_function_hooks WHERE params LIKE '%log%' AND params not LIKE '%logo%' AND params not LIKE '%login%' AND params not LIKE '%logged%'
+      AND params not LIKE '%blog%' AND params not LIKE '%dialog%' 
+      AND params not LIKE '%.php]' AND params not LIKE '%.html%' 
+      AND params not LIKE '%.pid%' AND params NOT LIKE '%benchmark-log-plugin%' 
+      AND params not LIKE '%.css%' AND params not LIKE '%.js%'
+      AND params not LIKE '%monolog%' GROUP BY plugin_slug;
+        """)
 
 grouped_log_names = con.sql(
     """
@@ -707,10 +754,3 @@ findings_ajax_containing_just_some_filtering = con.sql(
 
 print(findings_ajax_containing_just_some_filtering)
 
-
-#Describe Wp-CLI
-#Describe Test cases
-#Plot from sorted max to low x unique rest called, y active installations
-#Plot x unique AJAX, y active installations
-#What about the zips?
-#Count function_hooks, interesting hooks apart
