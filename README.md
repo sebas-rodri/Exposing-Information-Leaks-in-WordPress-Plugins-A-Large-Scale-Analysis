@@ -4,7 +4,7 @@ Instrumentation developed as part of my Bachelor Thesis at the SecT Chair, TU Be
 ## Research Questions and Objectives
 1. How common is it for WordPress plugins to leak sensitive information through log files or misconfigurations?
    <br> Objective: Quantify the existing problem.
-2. How can log leaks effectively be detected and prevented in an automated way?
+2. How can log leaks effectively be detected in an automated way?
    <br> Objective: Implementation of static and dynamic analysis on most popular plugins.
 3. Do these sensitive information leaks go unnoticed by existing security tools, how can they be improved?
    <br> Objective: Evaluation of current state of the art of the top 2 security plugins.
@@ -34,6 +34,23 @@ The Database contains all the Information gathered in the static- and dynamic an
 
 
 ## Quick Run
-
-
-## Future Work
+1. Static Analysis: <br>
+```
+cd scripts
+python3 sort-plugins-by-download.py
+mv plugins_sorted.csv ../static-analysis
+```
+Adapt Dockerfile to number of plugins that should be analyzed. <br>
+`docker compose up --build -d` <br>
+2. Dynamic Analysis (only when static analysis is finished):
+move/copy results.db to dynamic-analysis <br>
+Use a terminal multiplexer like tmux to keep the session running when disconnected from ssh <br>
+```
+tmux
+cd dynamic-analysis
+export $NUM_PLUGINS=10000; ./runscript.sh
+```
+3. Results:
+Analyze created duckdb database using sql queries.
+/results/create_graphics.py contains the ones used for the Thesis. <br>
+dynamic_analysis/shared_runner_watcher directory contains created or modified files during the dynamic analysis phase.
